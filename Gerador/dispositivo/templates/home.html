@@ -30,8 +30,8 @@
             <div>
                 <p>Tendecia dos dispositivos</p>
                 <select name='tendencia_dos_dispositivos'>
-                    {%for option in options %}
-                        <option value={{option}} selected>{{option}}</option>
+                    {%for option,value in options %}
+                        <option value={{value}} selected>{{option}}</option>
                     {%endfor%}
                 </select>
             </div>

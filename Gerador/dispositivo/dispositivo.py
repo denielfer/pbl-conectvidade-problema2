@@ -1,6 +1,8 @@
 import threading
-from random import random,choice
+from random import random,choice,choices
 from time import sleep
+
+SENSORES_NOMES = ['Temperatura','Frequencia Respiratoria','Oxigenação','Max Preção']
 
 def get_random_modify(goal,value,step =5):
     return round(((goal-value)*random())+(choice([-1,1]))*(step*random()),2)
@@ -28,31 +30,13 @@ SEND_FUNCTION_DEFAULT=send_with_socket#para ser facil de troca a função que en
 class Dispositivo:
     #variaveis para seta padraoes de alteração
     GOAL_DADOS_PER_STATE={
-        'Prioridade_4':{
+        'Grave':{
             'Temperatura':[40,0.5],
             'Frequencia Respiratoria': [25,1],
             'Oxigenação':[25,5],
             'Max Preção':[70,5],
         },
-        'Prioridade_3':{
-            'Temperatura':[36,0.5],
-            'Frequencia Respiratoria': [25,1],
-            'Oxigenação':[25,5],
-            'Max Preção':[70,5],
-        },
-        'Prioridade_2':{
-            'Temperatura':[36,0.5],
-            'Frequencia Respiratoria': [10,1],
-            'Oxigenação':[25,5],
-            'Max Preção':[70,5],
-        },
-        'Prioridade_1':{
-            'Temperatura':[36,0.5],
-            'Frequencia Respiratoria': [10,1],
-            'Oxigenação':[98,.5],
-            'Max Preção':[70,5],
-        },
-        'Prioridade_0':{
+        'Normal':{
             'Temperatura':[36,0.5],
             'Frequencia Respiratoria': [10,1],
             'Oxigenação':[98,.5],
@@ -65,7 +49,13 @@ class Dispositivo:
         self.medições = dados_dos_sensores if dados_dos_sensores else get_data_for_new_device()
         self.semaphare = threading.Semaphore(1)
         self.semaphare.acquire()
-        self.tendencia = tendencia
+        tendencia = int(tendencia)
+        ruim_em = choices(SENSORES_NOMES, k=tendencia)
+        print(ruim_em)
+        self.prioridade = tendencia
+        self.tendencia = {}
+        for a in SENSORES_NOMES:
+            self.tendencia[a] = Dispositivo.GOAL_DADOS_PER_STATE['Grave'][a] if a in ruim_em else Dispositivo.GOAL_DADOS_PER_STATE['Normal'][a]
 
     def altera_medições(self,dados_dos_sensore):
         self.medições= dados_dos_sensore
@@ -74,9 +64,8 @@ class Dispositivo:
         thread.setDaemon(True)
         thread.start()
     def __update_data__(self):
-        a = self.GOAL_DADOS_PER_STATE[self.tendencia]
-        for b in a:
-            self.medições[b]= round( self.medições[b]+get_random_modify(a[b][0],self.medições[b],a[b][1]),2)
+        for b in self.tendencia:
+            self.medições[b]= round( self.medições[b]+get_random_modify(self.tendencia[b][0],self.medições[b],self.tendencia[b][1]),2)
     def __thread_function__(self):
         while True:
             if(self.semaphare.acquire(False)):

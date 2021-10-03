@@ -12,7 +12,7 @@ def get_random_mac_id() -> str:
 
 def home(request):
     template = loader.get_template("home.html")
-    return HttpResponse(template.render({"dispositivos":[(dispositivos[a].id,dispositivos[a].tendencia)for a in dispositivos],"options":[ a for  a in Dispositivo.GOAL_DADOS_PER_STATE] },request))
+    return HttpResponse(template.render({"dispositivos":[(dispositivos[a].id,dispositivos[a].tendencia)for a in dispositivos],"options":[(f'Prioridade {a}',a) for a in range(5)] },request))
 
 def add(request):
     if(request.method == "POST"):
