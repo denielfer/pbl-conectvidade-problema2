@@ -1,0 +1,94 @@
+import threading
+from random import random,choice
+from time import sleep
+
+def get_random_modify(goal,value,step =5):
+    return round(((goal-value)*random())+(choice([-1,1]))*(step*random()),2)
+
+# DADOS_DEFAULT={
+#     'Temperatura':35.3,
+#     'Frequencia Respiratoria': 10,
+#     'Oxigenação':100,
+#     'Max Preção':120,
+# }
+
+def get_data_for_new_device():
+    return {
+    'Temperatura':get_random_modify(35.3,0,15),#numero aleatorio entre 0 e 35.3 +ou- 0 a 15
+    'Frequencia Respiratoria': get_random_modify(30,0,0),#numero aleatorio entre 0 e 30
+    'Oxigenação':get_random_modify(100,0,0),#numero aleatorio entre 0 e 100
+    'Max Preção':get_random_modify(120,0,0),#numero aleatorio entre 0 e 120
+    }
+
+def send_with_socket(id,dados):
+    print(f'nome: {id}, dados : {dados}')
+    return
+SEND_FUNCTION_DEFAULT=send_with_socket#para ser facil de troca a função que envia os dados
+
+class Dispositivo:
+    #variaveis para seta padraoes de alteração
+    GOAL_DADOS_PER_STATE={
+        'Prioridade_4':{
+            'Temperatura':[40,0.5],
+            'Frequencia Respiratoria': [25,1],
+            'Oxigenação':[25,5],
+            'Max Preção':[70,5],
+        },
+        'Prioridade_3':{
+            'Temperatura':[36,0.5],
+            'Frequencia Respiratoria': [25,1],
+            'Oxigenação':[25,5],
+            'Max Preção':[70,5],
+        },
+        'Prioridade_2':{
+            'Temperatura':[36,0.5],
+            'Frequencia Respiratoria': [10,1],
+            'Oxigenação':[25,5],
+            'Max Preção':[70,5],
+        },
+        'Prioridade_1':{
+            'Temperatura':[36,0.5],
+            'Frequencia Respiratoria': [10,1],
+            'Oxigenação':[98,.5],
+            'Max Preção':[70,5],
+        },
+        'Prioridade_0':{
+            'Temperatura':[36,0.5],
+            'Frequencia Respiratoria': [10,1],
+            'Oxigenação':[98,.5],
+            'Max Preção':[120,5],
+        },
+    }
+    def __init__(self,id,tendencia,send_function = SEND_FUNCTION_DEFAULT,dados_dos_sensores=None):
+        self.id = id
+        self.send_function = send_function
+        self.medições = dados_dos_sensores if dados_dos_sensores else get_data_for_new_device()
+        self.semaphare = threading.Semaphore(1)
+        self.semaphare.acquire()
+        self.tendencia = tendencia
+
+    def altera_medições(self,dados_dos_sensore):
+        self.medições= dados_dos_sensore
+    def init_thread(self):
+        thread = threading.Thread(target=self.__thread_function__,)
+        thread.setDaemon(True)
+        thread.start()
+    def __update_data__(self):
+        a = self.GOAL_DADOS_PER_STATE[self.tendencia]
+        for b in a:
+            self.medições[b]= round( self.medições[b]+get_random_modify(a[b][0],self.medições[b],a[b][1]),2)
+    def __thread_function__(self):
+        while True:
+            if(self.semaphare.acquire(False)):
+                break
+            self.__update_data__()
+            self.send_function(self.id,self.medições)
+            sleep(2*random())
+    def stop(self):
+        self.semaphare.release()
+
+
+if __name__ == "__main__":
+    d = Dispositivo('daniel',"Prioridade_4")
+    d.init_thread()
+    input()

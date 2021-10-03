@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de dispositivos</title>
+</head>
+<body>
+
+    {%for nome,tendencia in dispositivos%}
+        <div style='display:inline; '>
+            <div style='display:inline;'>
+                <h4>Dispositivo: {{nome}}, Tendencia: {{tendencia}}</h4>
+                <form action="/remove/" method="POST">{%csrf_token%}
+                    <input type="hidden" name="id" value="{{nome}}">
+                    <button style="width: 80px;" type="submit">REMOVER</button>
+                </form>
+            </div>
+        </div>
+    {%endfor%}
+
+        <div style='display:grid;place-items: center;'>
+        <form action="/add/" method="POST">{%csrf_token%}
+            <h2>Adiciona novo dispositivo</h2>
+            <div>
+                <p>Numero de dispositivos:</p>
+                <input type='number' min="1" step=1 value="1" name='numero_de_dispositivos'>
+            </div>
+            <div>
+                <p>Tendecia dos dispositivos</p>
+                <select name='tendencia_dos_dispositivos'>
+                    {%for option in options %}
+                        <option value={{option}} selected>{{option}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+            <div>
+                <button type="submit">Adicionar</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
