@@ -22,10 +22,11 @@ def get_data_for_new_device():
     'Max Preção':get_random_modify(120,0,0),#numero aleatorio entre 0 e 120
     }
 
-def send_with_socket(id,dados):
-    print(f'nome: {id}, dados : {dados}')
+def send_function(dispositivo):#id,dados
+    print(f'nome: {dispositivo.id}, dados : {dispositivo.medições}')
     return
-SEND_FUNCTION_DEFAULT=send_with_socket#para ser facil de troca a função que envia os dados
+
+SEND_FUNCTION_DEFAULT=send_function#para ser facil de troca a função que envia os dados
 
 class Dispositivo:
     #variaveis para seta padraoes de alteração
@@ -56,6 +57,21 @@ class Dispositivo:
         self.tendencia = {}
         for a in SENSORES_NOMES:
             self.tendencia[a] = Dispositivo.GOAL_DADOS_PER_STATE['Grave'][a] if a in ruim_em else Dispositivo.GOAL_DADOS_PER_STATE['Normal'][a]
+        self.prioridade_anteiror = 0
+        self.prioriade_atual = 0
+
+    def update_prioridade_atual(self):
+        self.prioridade_anteiror = self.prioriade_atual
+        cont = 0
+        if (self.medições["Max Preção"]<100):
+            cont+=1
+        if(self.medições["Oxigenação"]<96):
+            cont+=1
+        if(self.medições["Frequencia Respiratoria"]>20):
+            cont+=1
+        if(self.medições["Temperatura"]>38.0):
+            cont+=1
+        self.prioriade_atual = cont
 
     def altera_medições(self,dados_dos_sensore):
         self.medições= dados_dos_sensore
@@ -66,12 +82,13 @@ class Dispositivo:
     def __update_data__(self):
         for b in self.tendencia:
             self.medições[b]= round( self.medições[b]+get_random_modify(self.tendencia[b][0],self.medições[b],self.tendencia[b][1]),2)
+        self.update_prioridade_atual()
     def __thread_function__(self):
         while True:
             if(self.semaphare.acquire(False)):
                 break
             self.__update_data__()
-            self.send_function(self.id,self.medições)
+            self.send_function(self)
             sleep(2*random())
     def stop(self):
         self.semaphare.release()

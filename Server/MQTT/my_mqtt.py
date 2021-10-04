@@ -3,23 +3,18 @@ import threading
 
 class My_mqtt:
     def __init__(self):
-        self.mqtt_actions= {}
         self.client = mqtt.Client()
         self.topics = []
-    def subscribe(self,topic,callback,qos=1):
+    def subscribe(self,topic,qos=1):
         '''
-            Função que inscreve esse cliente em um topico especifico, chamando a função callback para processar a mensagem quando chegar
+            Função que inscreve esse cliente em um topico especifico
             por default temos qos como 1
             callback deve receber 3 argumentos: client,userdata,msg
             o topico e o payload estao dentro de msg
 
             @param topic: str, topico no qual o cliente se increvera
-            @param callback: function, função que lida com a mensagem no {topic}
             @param qos: int, qualidade da comunicação
         '''
-        if(topic[-1] == '#'):
-            topic= topic[:-1]
-        self.mqtt_actions[topic] = callback
         self.client.subscribe(topic,qos=qos)
 
     def __on_connect__(self,client, userdata, flags, rc):
@@ -30,29 +25,26 @@ class My_mqtt:
 
     def __on_message__(self,client, userdata, msg):
         '''
-            Função que é chamada pelo cliente quando qualquer mensagem de um topico que ele esta inscrito chega
-            os parametros sao so requeridos pela função que o chamada
+            Função que é chamada pelo cliente quando qualquer mensagem de um topico que ele esta inscrito e 
+              ela fata o prind do topico recebido e a mensagen
 
             Esta função cria uma thread para lidar com cada mensagem que chega passando o callback
 
         '''
-        print('mensagem arived')
-        for a in self.mqtt_actions:
-            if( msg.topic in a):
-                print(msg.topic)
-                t = threading.Thread(target=self.mqtt_actions[msg.topic],args=(client,userdata,msg))
-                t.setDaemon(True)
-                t.start()
-        else:
-            print(f'[MY_MQTT] Mensage arived but no callback was seted: {msg.topic}: {msg.payload}')
-    def conect(self,ip="localhost",port=1883,keep_alive=60):
+        print(f'[MY_MQTT] Mensage arived but no callback was seted: {msg.topic}: {msg.payload}')
+    def conect(self,ip="26.181.221.42",port=1883,keep_alive=60,callback=None):
         '''
             conecta com {ip}:{porta}, configura on_connect e on_menssage funções e inicia uma thread 
               para o main_loop do mqtt ( thread que vai receber as mensagens e passa para 
               amensagem que lida com todas as mensagens)
         '''
         self.client.on_connect = self.__on_connect__
-        self.client.on_message = self.__on_message__
+        if(callback == None):
+            print('[MY_MQTT] Using defalt callback (print)')
+            self.client.on_message = self.__on_message__
+        else:
+            print('[MY_MQTT] Using passed callback')
+            self.client.on_message = callback
         self.client.connect(ip, port, keep_alive)
         self.running_thread = threading.Thread(target=self.__main_loop__)
         self.running_thread.setDaemon(True)
@@ -88,11 +80,7 @@ class My_mqtt:
 
             @param topic: str, string informando o topico que quer se desiscrever
         '''
-        if(topic in self.mqtt_actions):
-            self.client.unsubscribe(topic)
-            del(self.mqtt_actions[topic])
-        else:
-            print(f"[MY_MQTT] Nao esta inscrito em {topic}")
+        self.client.unsubscribe(topic)
 
 if(__name__ == '__main__'):
     print("test")

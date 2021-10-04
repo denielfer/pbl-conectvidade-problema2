@@ -4,6 +4,10 @@ from django.template import loader
 from .dispositivo import Dispositivo
 from random import choices
 from string import hexdigits
+from .import mqtt_handler
+from time import sleep
+
+mqtt_handler.start_mqtt()
 
 dispositivos = {}
 
@@ -20,7 +24,11 @@ def add(request):
             id = get_random_mac_id()
             while(id in dispositivos):
                 id = get_random_mac_id()
-            dispositivos[id] = Dispositivo(id,request.POST.get('tendencia_dos_dispositivos'))
+            while(id not in mqtt_handler.dispositivo_fog):
+                print("esperando fog")
+                mqtt_handler.get_fog(id)
+                sleep(0.5)
+            dispositivos[id] = Dispositivo(id,request.POST.get('tendencia_dos_dispositivos'),send_function=mqtt_handler.update_paciente_function)
             dispositivos[id].init_thread()
     return redirect('home')
 
