@@ -7,6 +7,11 @@ fogs = set()
 fog_order = []
 with_fog = -1
 
+#
+#main_server/new_fog/__id_fog__
+#main_server/get_fog/__id_despositivo__
+#
+
 def __add_fog__(topic_splited,payload,client):
     if(topic_splited[2] not in fogs):
         fogs.add(topic_splited[2])
@@ -65,5 +70,9 @@ request_handler_thread.start()
 client.conect("26.181.221.42", 1883,callback = __queue_requests__)
 client.client.max_queued_messages_set(1000000)
 client.subscribe('main_server/#',qos=1)
+
+def publish(topic,mensagem):
+    client.publish(topic,mensagem)
+
 if(__name__ == '__main__'):
     input()

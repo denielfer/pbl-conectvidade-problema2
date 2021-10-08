@@ -72,7 +72,7 @@ class My_mqtt:
                 exista, para dic ele vira uma string que pode ser serealizado por um json) 
             @param qos: int, informa a qualidade do serviço
         '''
-        self.client.publish(topic,payload,qos)
+        self.client.publish(topic = topic,payload = payload,qos = qos)
 
     def unsubscribe(self, topic):
         '''

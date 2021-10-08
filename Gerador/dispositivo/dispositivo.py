@@ -60,6 +60,9 @@ class Dispositivo:
         self.prioridade_anteiror = 0
         self.prioriade_atual = 0
 
+    def get_medições(self):
+        return self.medições
+
     def update_prioridade_atual(self):
         self.prioridade_anteiror = self.prioriade_atual
         cont = 0

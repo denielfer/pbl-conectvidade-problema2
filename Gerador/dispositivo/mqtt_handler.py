@@ -1,6 +1,6 @@
 
 from .my_mqtt import My_mqtt
-from json import JSONDecoder as decoder
+from json import dumps
 from .dispositivo import Dispositivo
 
 # Rotas usadas:
@@ -30,4 +30,4 @@ def get_fog(id_dispositivo):
 
 def update_paciente_function(dispositivo:Dispositivo):
     fog = dispositivo_fog[dispositivo.id]
-    client_mqtt.publish(f'fogs/{fog}/update_data/{dispositivo.id}/{dispositivo.prioriade_atual}/{dispositivo.prioridade_anteiror}','')
+    client_mqtt.publish(f'fogs/{fog}/update_data/{dispositivo.id}/{dispositivo.prioriade_atual}/{dispositivo.prioridade_anteiror}',dumps(dispositivo.get_medições()))

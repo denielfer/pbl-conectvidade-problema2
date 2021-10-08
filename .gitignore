@@ -1,2 +1,4 @@
 env/
 MQTT_TEST/
+interfacie_do_medico/
+__pycache__/

@@ -38,17 +38,22 @@ class My_mqtt:
               para o main_loop do mqtt ( thread que vai receber as mensagens e passa para 
               amensagem que lida com todas as mensagens)
         '''
-        self.client.on_connect = self.__on_connect__
-        if(callback == None):
-            print('[MY_MQTT] Using defalt callback (print)')
-            self.client.on_message = self.__on_message__
-        else:
-            print('[MY_MQTT] Using passed callback')
-            self.client.on_message = callback
-        self.client.connect(ip, port, keep_alive)
-        self.running_thread = threading.Thread(target=self.__main_loop__)
-        self.running_thread.setDaemon(True)
-        self.running_thread.start()
+        while True:
+            try:
+                self.client.on_connect = self.__on_connect__
+                if(callback == None):
+                    print('[MY_MQTT] Using defalt callback (print)')
+                    self.client.on_message = self.__on_message__
+                else:
+                    print('[MY_MQTT] Using passed callback')
+                    self.client.on_message = callback
+                self.client.connect(ip, port, keep_alive)
+                self.running_thread = threading.Thread(target=self.__main_loop__)
+                self.running_thread.setDaemon(True)
+                self.running_thread.start()
+                break
+            except Exception:
+                print(f"Nao foi poscivel se conectar com o broker, tentando novamente")
 
     def __main_loop__(self):
         '''
