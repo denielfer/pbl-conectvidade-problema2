@@ -1,7 +1,6 @@
 from flask import Flask,jsonify
 from json import JSONDecodeError
 import mqtt_handler
-from markupsafe import escape
 
 app = Flask(__name__)
 

@@ -64,17 +64,20 @@ class Dispositivo:
         return self.medições
 
     def update_prioridade_atual(self):
-        self.prioridade_anteiror = self.prioriade_atual
-        cont = 0
-        if (self.medições["Max Preção"]<100):
-            cont+=1
-        if(self.medições["Oxigenação"]<96):
-            cont+=1
-        if(self.medições["Frequencia Respiratoria"]>20):
-            cont+=1
-        if(self.medições["Temperatura"]>38.0):
-            cont+=1
-        self.prioriade_atual = cont
+        cont = (100-self.medições["Max Preção"])*3+(96-self.medições["Oxigenação"])*4+(self.medições["Frequencia Respiratoria"]-20*5)+(self.medições["Temperatura"]-38)*6
+        # self.prioridade_anteiror = self.prioriade_atual
+        # cont = 0
+        # if (self.medições["Max Preção"]<100):
+        #     cont+=1
+        # if(self.medições["Oxigenação"]<96):
+        #     cont+=1
+        # if(self.medições["Frequencia Respiratoria"]>20):
+        #     cont+=1
+        # if(self.medições["Temperatura"]>38.0):
+        #     cont+=1
+        self.prioridade = cont
+
+# (100-preção)*3+(96-oxigenação)*4+(freq_respiratoria-20*5)+(tempertura-38)*6
 
     def altera_medições(self,dados_dos_sensore):
         self.medições= dados_dos_sensore
