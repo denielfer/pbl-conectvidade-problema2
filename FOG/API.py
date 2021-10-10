@@ -29,6 +29,6 @@ def api_get_pacientes(quantidade:int):
     #retorna um dicionario com o campo 'pacientes' que tem uma lista com tamanho solicitado contendo os pacientes mais
     #   graves do sistema na seguinte forma: [__id_do_paciente__,{__dados_do_paciente__}]
     a = mqtt_handler.get_pacientes_por_prioridade(quantidade)
-    return {'len':len(a),'pacientes':a}
+    return {'pacientes':a}
 
 app.run(host=mqtt_handler.HOST, port=mqtt_handler.PORT, )
