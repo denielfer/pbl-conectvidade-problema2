@@ -6,22 +6,20 @@ from sortedcontainers import SortedList
 
 app = Flask(__name__)
 
-@app.route('/<quantidade>', methods=['GET'])
+@app.route('/pacientes/<quantidade>', methods=['GET'])
 def api_get(quantidade):
     '''
         Funçao que retorna um json contendo os {quantidade} pacientes mais graves do sistema
     '''
-    pacientes = SortedList(key = lambda x: x[1])
-    for a in mqtt_handler.fogs:
-        print(quantidade)
-        print()
-        print()
-        print()
-        print()
-        print()
-        print()
-        pacientes.update(requests.get(mqtt_handler.fogs[a]+f'/pacientes/{quantidade}').json['pacientes'])
-    return {'pacientes':pacientes.sort(key=lambda x: x[1],reverse=True)[:quantidade]}
+    try:
+        pacientes = SortedList(key=lambda x: x[1])
+        for a in mqtt_handler.fogs:
+            pacientes.update(requests.get('http://'+mqtt_handler.fogs[a]+f'/pacientes/{quantidade}').json()['pacientes'])
+        print(f'[API] resquest 200')
+        return {'pacientes':pacientes[::-1][:int(quantidade)]},200
+    except:
+        print(f'[API] Erro on process request')
+        return {'pacientes':[]},200
         
 app.run(host="0.0.0.0", port=17892)
     
