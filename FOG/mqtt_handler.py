@@ -96,6 +96,6 @@ request_handler_thread = threading.Thread(target = __request_handler__,args=(Tru
 request_handler_thread.setDaemon(True)
 request_handler_thread.start()
 my_client.subscribe(f'fogs/{fog_name}/#', qos = 1)
-my_client.publish(f"main_server/new_fog/{fog_name}", '26.181.221.42:18956')
+my_client.publish(f"main_server/new_fog/{fog_name}", f'{HOST}:{PORT}')
 if(__name__ == '__main__'):
     input()
