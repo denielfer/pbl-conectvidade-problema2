@@ -29,5 +29,10 @@ def get_fog(id_dispositivo):
     client_mqtt.publish(f'main_server/get_fog/{id_dispositivo}', '')
 
 def update_paciente_function(dispositivo:Dispositivo):
-    fog = dispositivo_fog[dispositivo.id]
-    client_mqtt.publish(f'fogs/{fog}/update_data/{dispositivo.id}/{dispositivo.gravidade}', dumps(dispositivo.get_medições()))
+    if(dispositivo.id in dispositivo_fog):
+        fog = dispositivo_fog[dispositivo.id]
+        client_mqtt.publish(f'fogs/{fog}/update_data/{dispositivo.id}/{dispositivo.gravidade}/{dispositivo.old_gravidade}',
+                            dumps(dispositivo.get_medicoes()))
+    else:
+        get_fog(dispositivo.id)
+        print(f"[{dispositivo.id}] requesting FOG")

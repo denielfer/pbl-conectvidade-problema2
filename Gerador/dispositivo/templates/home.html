@@ -8,11 +8,11 @@
 </head>
 <body>
 
-    {%for nome,prioridade in dispositivos%}
+    {%for nome in dispositivos%}
         <div style='display:inline; '>
             <div style='display:inline;'>
-                <h4>Dispositivo: {{nome}}, Prioridade: {{prioridade}}</h4>
                 <form action="/remove/" method="POST">{%csrf_token%}
+                    <h4>Dispositivo: {{nome}}</h4>
                     <input type="hidden" name="id" value="{{nome}}">
                     <button style="width: 80px;" type="submit">REMOVER</button>
                 </form>

@@ -3,7 +3,7 @@ from time import sleep
 import threading
 
 requests_to_process = []
-fogs = set()
+fogs = {}
 fog_order = []
 with_fog = -1
 
@@ -13,14 +13,17 @@ with_fog = -1
 #
 
 def __add_fog__(topic_splited, payload, client):
-    if(topic_splited[2] not in fogs):
-        fogs.add(topic_splited[2])
-        fog_order.append(topic_splited[2])
-#    print(fogs)
-        print(f'[MQTT_HANDLER] Fog added {topic_splited[2]}')
-    else:
-        print(f'[MQTT_HANDLER] Fog already exist {topic_splited[2]}')
-
+    try:
+        if(topic_splited[2] not in fogs):
+            fog_order.append(topic_splited[2])
+    #    print(fogs)
+            print(f'[MQTT_HANDLER] Fog added {topic_splited[2]}')
+        else:
+            print(f'[MQTT_HANDLER] Fog already exist {topic_splited[2]}')
+        fogs[topic_splited[2]] = str(payload)[2:-1] # salvamos o url informado ( caso ja tenha algum path atualizamos ele)
+    except Exception as e:
+            print(f'[MQTT_HANDLER] Not able to get path from {payload}')
+ 
 def __get_fog__(topic_splited, payload, client):
     global with_fog
     if(len(fog_order) != 0):

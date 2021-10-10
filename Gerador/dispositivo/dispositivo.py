@@ -56,13 +56,19 @@ class Dispositivo:
         self.semaphare = threading.Semaphore(1)
         self.semaphare.acquire()
         self.tendencia = Dispositivo.GOAL_DADOS_PER_STATE[tendencia]
+        self.gravidade = -300
         self.update_gravidade()
 
     def get_medicoes(self):
         return self.medicoes
 
     def update_gravidade(self):
-        self.gravidade = (100 - self.medições["Max Pressao"]) * 3 + (96 - self.medições["Oxigenacao"]) * 4 + (self.medições["Frequencia Respiratoria"] - 20) * 3 + (self.medições["Temperatura"] - 38) * 4 + (self.medições["Frequencia Cardiaca"] - 100) * 3
+        self.old_gravidade = self.gravidade
+        self.gravidade = round(((100 - self.medicoes["Max Pressao"]) * 3 + 
+                          (96 - self.medicoes["Oxigenacao"]) * 4 + 
+                          (self.medicoes["Frequencia Respiratoria"] - 20) * 3 + 
+                          (self.medicoes["Temperatura"] - 38) * 4 + 
+                          (self.medicoes["Frequencia Cardiaca"] - 100) * 3),2)
 
     def altera_medicoes(self, dados_dos_sensores):
         self.medicoes = dados_dos_sensores

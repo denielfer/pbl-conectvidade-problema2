@@ -16,7 +16,7 @@ def get_random_mac_id() -> str:
 
 def home(request):
     template = loader.get_template("home.html")
-    return HttpResponse(template.render({"dispositivos":[(dispositivos[a].id,dispositivos[a].prioridade)for a in dispositivos],"options":[(f'Prioridade {a}',a) for a in range(5)] },request))
+    return HttpResponse(template.render({"dispositivos":[(dispositivos[a].id)for a in dispositivos],"options":[(f'Prioridade {a}',a) for a in mqtt_handler.Dispositivo.GOAL_DADOS_PER_STATE] },request))
 
 def add(request):
     if(request.method == "POST"):
@@ -24,10 +24,10 @@ def add(request):
             id = get_random_mac_id()
             while(id in dispositivos):
                 id = get_random_mac_id()
-            while(id not in mqtt_handler.dispositivo_fog):
-                print("esperando fog")
-                mqtt_handler.get_fog(id)
-                sleep(0.5)
+            # while(id not in mqtt_handler.dispositivo_fog):
+            #     print("esperando fog")
+            #     mqtt_handler.get_fog(id)
+            #     sleep(0.5)
             dispositivos[id] = Dispositivo(id,request.POST.get('tendencia_dos_dispositivos'),send_function=mqtt_handler.update_paciente_function)
             dispositivos[id].init_thread()
     return redirect('home')
