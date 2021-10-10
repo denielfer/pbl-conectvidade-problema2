@@ -4,7 +4,7 @@ import threading
 import json
 from sortedcontainers import SortedList
 
-HOST = '26.181.221.42'
+HOST = __seu_id__
 PORT = 18956
 
 # decoder = json.JSONDecoder()

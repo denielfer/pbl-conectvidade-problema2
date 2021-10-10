@@ -21,5 +21,5 @@ def api_get(quantidade):
         print(f'[API] Erro on process request')
         return {'pacientes':[]},200
         
-app.run(host="0.0.0.0", port=17892)
+app.run(host="26.181.221.42", port=17892)
     
