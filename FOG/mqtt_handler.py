@@ -4,7 +4,8 @@ import threading
 import json
 from sortedcontainers import SortedList
 
-HOST = '26.181.221.42'
+#HOST = '26.181.221.42'
+HOST = '26.165.180.216'
 PORT = 18956
 
 # decoder = json.JSONDecoder()
@@ -31,7 +32,7 @@ def __update_data__(topic_splited, payload, client):
     try: # tentanmos remove o dado antigo de gravidade do paciente na lista
         pacientes_por_gravidade.pop( pacientes_por_gravidade.index( ( topic_splited[3],float(topic_splited[5]) ) ) )
     except:
-        print(f"[MQTT_HANDLER] Nao exisre registro anterior do paciente {topic_splited[3]}")
+        print(f"[MQTT_HANDLER] Nao existe registro anterior do paciente {topic_splited[3]}")
 
     try:
         dados = json.loads(payload)
@@ -96,6 +97,6 @@ request_handler_thread = threading.Thread(target = __request_handler__,args=(Tru
 request_handler_thread.setDaemon(True)
 request_handler_thread.start()
 my_client.subscribe(f'fogs/{fog_name}/#', qos = 1)
-my_client.publish(f"main_server/new_fog/{fog_name}", '26.181.221.42:18956')
+my_client.publish(f"main_server/new_fog/{fog_name}", f'{HOST}:{PORT}')
 if(__name__ == '__main__'):
     input()
