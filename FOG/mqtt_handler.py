@@ -4,7 +4,7 @@ import threading
 import json
 from sortedcontainers import SortedList
 
-HOST = __seu_id__
+HOST = '26.181.221.42'
 PORT = 18956
 
 # decoder = json.JSONDecoder()
@@ -17,7 +17,7 @@ my_client = My_mqtt()
 #   'fogs/__fog_identificador__/update_data/__identificador_do_paciente__/__gravidade__/__gravidade_anterior__'
 
 # para armazena os pacietnes usaremos uma estrutura de dados com o(log(n)) para adição,acesso e 
-pacientes_por_gravidade = SortedList(key=lambda x: x[1])  # guarda uma tupla: (__id_paciente__,__gravidade__)
+pacientes_por_gravidade = SortedList(key=lambda x: x['gravidade'])  # guarda uma tupla: (__id_paciente__,__gravidade__)
 pacientes_dados = {}  # guarda os dados do paciente com chave id do paciente: __id_do_paciente__:__dados__
 
 def __update_data__(topic_splited, payload, client):
@@ -29,7 +29,7 @@ def __update_data__(topic_splited, payload, client):
     '''
     print(f'{topic_splited[3]} gravidade:{topic_splited[4]} estado:{"Grave" if float(topic_splited[4]) > 100 else "Normal"}')
     try: # tentanmos remove o dado antigo de gravidade do paciente na lista
-        pacientes_por_gravidade.pop( pacientes_por_gravidade.index( ( topic_splited[3],float(topic_splited[5]) ) ) )
+        pacientes_por_gravidade.pop( pacientes_por_gravidade.index( { 'id':topic_splited[3],'gravidade':float(topic_splited[5]) } ) )
     except:
         print(f"[MQTT_HANDLER] Nao exisre registro anterior do paciente {topic_splited[3]}")
 
@@ -38,7 +38,7 @@ def __update_data__(topic_splited, payload, client):
     except:
         print(f'[MQTT_HANDLER] not able to decode payload: {payload}')
         return
-    pacientes_por_gravidade.add((topic_splited[3],float(topic_splited[4])))
+    pacientes_por_gravidade.add( { 'id':topic_splited[3],'gravidade':float(topic_splited[4]) })
     pacientes_dados[topic_splited[3]] = dados
 
 request_actions = {
