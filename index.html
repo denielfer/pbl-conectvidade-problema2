@@ -25,77 +25,76 @@
     }
 
     tr:hover {
-      background-color: blue;
+      background-color: grey;
     }
   </style>
 </head>
 
 <body class="bg-dark text-white">
   <div class="card-dark justify-content-center text-center table-responsive">
-
+    <h1>Bem Vindo ao Sistema de Monitoramento</h1>
+    <hr>
+    <label for="quantidade">Número de pacientes da tabela:</label>
     <input type="number" id="quantidade" placeholder="Quantidade" value="10">
 
     <!-- Tabela de pacientes -->
     <table id="table" class="text-white" data-row-style="rowStyle" data-show-refresh="true" data-ajax="ajaxRequest" data-sort-order="desc" data-sort-name="gravidade" data-detail-view="true" data-detail-view-icon="false" data-detail-view-by-click="true" data-detail-formatter="detailFormatter">
       <thead>
         <tr>
-          <!-- <th data-field="id">ID</th> -->
           <th data-field="id">ID</th>
-          <!-- <th data-field="temperatura" data-formatter="%s °C">Temperatura</th>
-          <th data-field="fCardiaca" data-formatter="%s bat/min">Frequência Cardíaca</th>
-          <th data-field="fRespiratoria" data-formatter="%s mov/min">Frequência Respiratória</th>
-          <th data-field="oxigenacao" data-formatter="%s %">Oxigenação</th>
-          <th data-field="pressao" data-formatter="%s mmHg">Pressão</th> -->
           <th data-field="gravidade" data-formatter="%s" data-sortable=true>Gravidade</th>
-          <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Ver</th>
         </tr>
       </thead>
     </table>
     <script>
       //configura as funções a serem executadas na criação da tela
       $(document).ready(function() {
-        //construção da tabela ordenando de acordo com o nível de oxigenação(pacientes com menor nível de oxigenação ficam no topo da tabela)
+        //construção da tabela ordenando em ordem decrescente de gravidade
         $('#table').bootstrapTable({
           data: data,
           sortStable: true
         });
 
-        //atualiza a tabela de pacientes a cada 10 segundos
+        // atualiza a tabela de pacientes a cada 30 segundos
         // setInterval(function(){
         //   $('#table').bootstrapTable('refresh');
-        // }, 8000);
+        // }, 30000);
       });
 
+      //função executada quando é clicado em uma linha da tabela
       function detailFormatter(index, row) {
-        var html = []
-        $.each(row, function (key, value) {
-        //   $.ajax({
-        //     method: 'GET',
-        //     url: 'http://26.181.221.42:17892/pacientes/' + qtd,
-        //     async: true,
-        //     success: function (response) {
-        //       console.log(response);
+        var html = [];
+        var jsonData = {}
 
-        //       //construção da tabela com inserção dos dados dos pacientes
-        //       params.success({
-        //         "rows": response.pacientes,
-        //         "total": length
-        //       })
-        //     },
-        //     error: function (e) {
-        //         alert("Servidor indisponível")
-        //         console.log(e);
-        //     }
-        // });
-          html.push('<p class="text-start"><b>' + key + ':</b> ' + value + '</p>')
-        })
+        //requisição à FOG pelos dados completos do respectivo paciente
+        $.ajax({
+            method: 'GET',
+            url: row.href,
+            async: false,
+            success: function (response) {
+              jsonData = response;
+              console.log(jsonData);
+            },
+            error: function (e) {
+                alert("Servidor indisponível")
+                console.log(e);
+            }
+        });
+
+        //adiciona os dados na tela, abaixo do paciente clicado
+        html.push('<p class="text-start"><b>Frequência Cardíaca: </b> ' + jsonData['Frequencia Cardiaca'] + ' bat/min' + '</p>')
+        html.push('<p class="text-start"><b>Frequência Respiratória: </b> ' + jsonData['Frequencia Respiratoria'] + ' mov/min' + '</p>')
+        html.push('<p class="text-start"><b>Pressão: </b> ' + jsonData['Max Pressao'] + ' mm Hg' + '</p>')
+        html.push('<p class="text-start"><b>Oxigenação: </b> ' + jsonData['Oxigenacao'] + ' %' + '</p>')
+        html.push('<p class="text-start"><b>Temperatura: </b> ' + jsonData['Temperatura'] + ' °C' + '</p>')
         return html.join('')
       }
       
       function ajaxRequest(params) {
+        //pega o valor do campo quantidade, para buscar N pacientes mais graves
         var qtd = document.getElementById("quantidade").value;
 
-        //transfere as informações no formato json para o backend(client), o qual se comunica com o servidor
+        //requisição para o servidor buscando os N pacientes mais graves ordenados
         $.ajax({
             method: 'GET',
             url: 'http://26.181.221.42:17892/pacientes/' + qtd,
@@ -103,7 +102,7 @@
             success: function (response) {
               console.log(response);
 
-              //construção da tabela com inserção dos dados dos pacientes
+              //construção da tabela com inserção dos dados mínimos dos pacientes
               params.success({
                 "rows": response.pacientes,
                 "total": length
@@ -119,17 +118,11 @@
       //json genérico para criação da tabela
       var data = [{
           'id': null,
-          'nome': null,
-          'temperatura': null,
-          'fCardiaca': null,
-          'fRespiratoria': null,
-          'oxigenacao': null,
-          'pressao': null,
           'gravidade': null
         }
       ]
 
-    //adiciona background vermelho aos pacientes em estado grave
+    //adiciona background vermelho aos pacientes em estado grave(gravidade > 100)
     function rowStyle(row, index) {
       console.log(row)
       if (row.gravidade > 100) {
@@ -140,36 +133,6 @@
       return {
       }
     }
-
-    function operateFormatter(value, row, index) {
-    return [
-      '<a class="like" href="javascript:void(0)" title="Like">',
-      '<i class="fa fa-heart"></i>',
-      '</a>  '
-    ].join('')
-  }
-
-  window.operateEvents = {
-    'click .like': function (e, value, row, index) {
-      // var html = []
-      // html.push('<p class="text-start"><b>' + 'oi' + ':</b> ' + 'value' + '</p>')
-      // return html.join('')
-
-        $.ajax({
-            method: 'GET',
-            url: row.href,
-            async: true,
-            success: function (response) {
-              console.log(response);
-              alert('You click like action, row: ' + JSON.stringify(response));
-            },
-            error: function (e) {
-                alert("Servidor indisponível")
-                console.log(e);
-            }
-        });
-    }
-  }
   </script>
   </div>
 </body>
