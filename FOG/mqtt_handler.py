@@ -31,7 +31,7 @@ def __update_data__(topic_splited, payload, client):
     try: # tentanmos remove o dado antigo de gravidade do paciente na lista
         pacientes_por_gravidade.pop( pacientes_por_gravidade.index( { 'id':topic_splited[3],'gravidade':float(topic_splited[5]) } ) )
     except:
-        print(f"[MQTT_HANDLER] Nao exisre registro anterior do paciente {topic_splited[3]}")
+        print(f"[MQTT_HANDLER] Nao existe registro anterior do paciente {topic_splited[3]}")
 
     try:
         dados = json.loads(payload)

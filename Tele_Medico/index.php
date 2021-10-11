@@ -33,24 +33,21 @@
 <body class="bg-dark text-white">
   <div class="card-dark justify-content-center text-center table-responsive">
 
-    <!-- Adicionar paciente -->
-    <button onclick="add()">Adicionar</button>
-    <hr>
+    <input type="number" id="quantidade" placeholder="Quantidade" value="10">
 
     <!-- Tabela de pacientes -->
-    <!-- <table id="table" class="text-white" data-row-style="rowStyle" data-show-refresh="true" data-ajax="ajaxRequest" data-sort-name="gravidade" data-sort-order="asc"> -->
-    <table id="table" class="text-white" data-row-style="rowStyle" data-show-refresh="true" data-ajax="ajaxRequest" data-sort-order="desc" data-detail-view="true" data-detail-view-icon="false" data-detail-view-by-click="true" data-detail-formatter="detailFormatter">
+    <table id="table" class="text-white" data-row-style="rowStyle" data-show-refresh="true" data-ajax="ajaxRequest" data-sort-order="desc" data-sort-name="gravidade" data-detail-view="true" data-detail-view-icon="false" data-detail-view-by-click="true" data-detail-formatter="detailFormatter">
       <thead>
         <tr>
+          <!-- <th data-field="id">ID</th> -->
           <th data-field="id">ID</th>
-          <th data-field="usuario">Nome</th>
-          <th data-field="temperatura" data-formatter="%s °C">Temperatura</th>
+          <!-- <th data-field="temperatura" data-formatter="%s °C">Temperatura</th>
           <th data-field="fCardiaca" data-formatter="%s bat/min">Frequência Cardíaca</th>
           <th data-field="fRespiratoria" data-formatter="%s mov/min">Frequência Respiratória</th>
           <th data-field="oxigenacao" data-formatter="%s %">Oxigenação</th>
-          <th data-field="pressao" data-formatter="%s mmHg">Pressão</th>
-          <!-- <th data-field="gravidade" data-formatter="%s" data-sortable=true>Gravidade</th> -->
-          <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Remover</th>
+          <th data-field="pressao" data-formatter="%s mmHg">Pressão</th> -->
+          <th data-field="gravidade" data-formatter="%s" data-sortable=true>Gravidade</th>
+          <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Ver</th>
         </tr>
       </thead>
     </table>
@@ -64,111 +61,59 @@
         });
 
         //atualiza a tabela de pacientes a cada 10 segundos
-        setInterval(function(){
-          $('#table').bootstrapTable('refresh');
-        }, 8000);
+        // setInterval(function(){
+        //   $('#table').bootstrapTable('refresh');
+        // }, 8000);
       });
 
       function detailFormatter(index, row) {
         var html = []
         $.each(row, function (key, value) {
+        //   $.ajax({
+        //     method: 'GET',
+        //     url: 'http://26.181.221.42:17892/pacientes/' + qtd,
+        //     async: true,
+        //     success: function (response) {
+        //       console.log(response);
+
+        //       //construção da tabela com inserção dos dados dos pacientes
+        //       params.success({
+        //         "rows": response.pacientes,
+        //         "total": length
+        //       })
+        //     },
+        //     error: function (e) {
+        //         alert("Servidor indisponível")
+        //         console.log(e);
+        //     }
+        // });
           html.push('<p class="text-start"><b>' + key + ':</b> ' + value + '</p>')
         })
         return html.join('')
       }
-
-      function add() {
-        //construção do json para criar paciente
-        let json = {
-          method: 'add',
-        }
-
-        //transfere as informações no formato json para o backend(client), o qual se comunica com o servidor
-        $.ajax({
-          type: 'POST',
-          dataType: 'json',
-          url: 'client.php',
-          async: true,
-          data: json,
-          success: function(response) {
-            // console.log(response);
-
-            //atualiza a tabela
-            $('#table').bootstrapTable('refresh');
-          },
-          error: function(error) {
-            alert('Erro: Servidor indisponível');
-            console.log(error);
-          }
-        });
-      }
       
       function ajaxRequest(params) {
-        //construção do json para requisitar a lista de pacientes
-        let json = {
-          method: 'get',
-        }
+        var qtd = document.getElementById("quantidade").value;
 
         //transfere as informações no formato json para o backend(client), o qual se comunica com o servidor
         $.ajax({
-            method: 'POST',
-            url: 'client.php',
+            method: 'GET',
+            url: 'http://26.181.221.42:17892/pacientes/' + qtd,
             async: true,
-            cache: false,
-            data: json,
             success: function (response) {
-              //padronização do json para formação da tabela
-              response = JSON.parse(response);
-              rows = JSON.parse(response.response.data);
-              console.log(rows);
-              
+              console.log(response);
+
               //construção da tabela com inserção dos dados dos pacientes
               params.success({
-                "rows": rows,
-                "total": rows.length
+                "rows": response.pacientes,
+                "total": length
               })
             },
             error: function (e) {
+                alert("Servidor indisponível")
                 console.log(e);
             }
         });
-      }
-
-      function operateFormatter(value, row, index) {
-        //adiciona ícones de remover na tabela
-        return [
-          '<a class="remove" href="javascript:void(0)" title="Remove">',
-          '<i class="fa fa-trash"></i>',
-          '</a>'
-        ].join('')
-      }
-
-      window.operateEvents = {
-        'click .remove': function (e, value, row, index) {
-          //construção do json de remoção de paciente
-          let json = {
-            method: 'delete',
-            id: row.id
-          }
-
-          //transfere as informações no formato json para o backend(client), o qual se comunica com o servidor
-          $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'client.php',
-            async: true,
-            data: json,
-            success: function(response) {
-              // console.log(response);
-              
-              //atualiza a tabela
-              $('#table').bootstrapTable('refresh');
-            },
-            error: function(error) {
-              console.log(error);
-            }
-          });
-        }
       }
 
       //json genérico para criação da tabela
@@ -186,8 +131,8 @@
 
     //adiciona background vermelho aos pacientes em estado grave
     function rowStyle(row, index) {
-      if (row.temperatura > 38.5 || row.fCardiaca > 110 || row.fRespiratoria > 20 || row.pressao < 81) {
-        if (row.oxigenacao < 92)
+      console.log(row)
+      if (row.gravidade > 100) {
           return {
             classes: 'bg-red'
           }
@@ -195,6 +140,36 @@
       return {
       }
     }
+
+    function operateFormatter(value, row, index) {
+    return [
+      '<a class="like" href="javascript:void(0)" title="Like">',
+      '<i class="fa fa-heart"></i>',
+      '</a>  '
+    ].join('')
+  }
+
+  window.operateEvents = {
+    'click .like': function (e, value, row, index) {
+      // var html = []
+      // html.push('<p class="text-start"><b>' + 'oi' + ':</b> ' + 'value' + '</p>')
+      // return html.join('')
+
+        $.ajax({
+            method: 'GET',
+            url: row.href,
+            async: true,
+            success: function (response) {
+              console.log(response);
+              alert('You click like action, row: ' + JSON.stringify(response));
+            },
+            error: function (e) {
+                alert("Servidor indisponível")
+                console.log(e);
+            }
+        });
+    }
+  }
   </script>
   </div>
 </body>

@@ -9,7 +9,7 @@ app = Flask(__name__)
 @app.route('/pacientes/<quantidade>', methods=['GET'])
 def api_get(quantidade):
     '''
-        Funçao que retorna um json contendo os {quantidade} pacientes mais graves do sistema
+        Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema
     '''
     # try:
     pacientes = SortedList(key=lambda x: x['gravidade'])
