@@ -17,11 +17,11 @@ def get_random_modify(goal, value, step = 5):
 
 def get_data_for_new_device():
     return {
-    'Temperatura': get_random_modify(35.3,0,15), #numero aleatorio entre 0 e 35.3 +ou- 0 a 15
-    'Frequencia Respiratoria': get_random_modify(30,0,0), #numero aleatorio entre 0 e 30
-    'Frequencia Cardiaca': get_random_modify(120,0,0), #numero aleatorio entre 0 e 120
-    'Oxigenacao': get_random_modify(100,0,0), #numero aleatorio entre 0 e 100
-    'Max Pressao': get_random_modify(120,0,0), #numero aleatorio entre 0 e 120
+        'Temperatura': get_random_modify(35.3,0,15), #numero aleatorio entre 0 e 35.3 +ou- 0 a 15
+        'Frequencia Respiratoria': get_random_modify(30,0,0), #numero aleatorio entre 0 e 30
+        'Frequencia Cardiaca': get_random_modify(120,0,0), #numero aleatorio entre 0 e 120
+        'Oxigenacao': get_random_modify(100,0,0), #numero aleatorio entre 0 e 100
+        'Max Pressao': get_random_modify(120,0,0), #numero aleatorio entre 0 e 120
     }
 
 def send_function(dispositivo): #id, dados
