@@ -5,7 +5,8 @@ class My_mqtt:
     def __init__(self):
         self.client = mqtt.Client()
         self.topics = []
-    def subscribe(self,topic,qos=1):
+
+    def subscribe(self, topic, qos = 1):
         '''
             Função que inscreve esse client em um tópico específico
             por default temos qos = 1
@@ -15,7 +16,7 @@ class My_mqtt:
             @param topic: str, tópico no qual o client se increverá
             @param qos: int, qualidade da comunicação
         '''
-        self.client.subscribe(topic,qos=qos)
+        self.client.subscribe(topic, qos = qos)
 
     def __on_connect__(self, client, userdata, flags, rc):
         '''
@@ -68,7 +69,7 @@ class My_mqtt:
         '''
         self.client.disconect()
     
-    def publish(self,topic,payload,qos=1):
+    def publish(self, topic, payload, qos = 1):
         '''
             Publica {payload} no {topic} com o qos informado
 
@@ -96,9 +97,9 @@ if(__name__ == '__main__'):
     def __print__(client, userdata, msg):
         print(msg.payload)
 
-    client.subscribe('oi',__print__)
+    client.subscribe('oi', __print__)
     print("waiting")
     from time import sleep
     sleep(1)
-    client.subscribe('tchau',__print__)
+    client.subscribe('tchau', __print__)
     sleep(30)

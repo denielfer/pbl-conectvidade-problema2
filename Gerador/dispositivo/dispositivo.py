@@ -17,11 +17,11 @@ def get_random_modify(goal, value, step = 5):
 
 def get_data_for_new_device():
     return {
-    'Temperatura': get_random_modify(35.3,0,15), #numero aleatorio entre 0 e 35.3 +ou- 0 a 15
-    'Frequencia Respiratoria': get_random_modify(30,0,0), #numero aleatorio entre 0 e 30
-    'Frequencia Cardiaca': get_random_modify(120,0,0), #numero aleatorio entre 0 e 120
-    'Oxigenacao': get_random_modify(100,0,0), #numero aleatorio entre 0 e 100
-    'Max Pressao': get_random_modify(120,0,0), #numero aleatorio entre 0 e 120
+    'Temperatura': get_random_modify(35.3,0,15), #número aleatório entre 0 e 35.3 +ou- 0 a 15
+    'Frequencia Respiratoria': get_random_modify(30,0,0), #número aleatório entre 0 e 30
+    'Frequencia Cardiaca': get_random_modify(120,0,0), #número aleatório entre 0 e 120
+    'Oxigenacao': get_random_modify(100,0,0), #número aleatório entre 0 e 100
+    'Max Pressao': get_random_modify(120,0,0), #número aleatório entre 0 e 120
     }
 
 def send_function(dispositivo): #id, dados
@@ -31,7 +31,7 @@ def send_function(dispositivo): #id, dados
 SEND_FUNCTION_DEFAULT = send_function #para ser fácil de trocar a função que envia os dados
 
 class Dispositivo:
-    #variaveis para setar padrões de alteração
+    #variáveis para setar padrões de alteração
     GOAL_DADOS_PER_STATE={
         'Grave': {
             'Temperatura': [40,0.5],

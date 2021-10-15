@@ -20,7 +20,7 @@ def __add_fog__(topic_splited, payload, client):
             print(f'[MQTT_HANDLER] Fog added {topic_splited[2]}')
         else:
             print(f'[MQTT_HANDLER] Fog already exist {topic_splited[2]}')
-        fogs[topic_splited[2]] = str(payload)[2:-1] # salvamos o url informado ( caso ja tenha algum path atualizamos ele)
+        fogs[topic_splited[2]] = str(payload)[2:-1] # salvamos o url informado (caso já tenha algum path, atualizamos ele)
     except Exception as e:
             print(f'[MQTT_HANDLER] Not able to get path from {payload}')
  
@@ -42,7 +42,7 @@ def __update_dados__(topic_splited, payload, client):
 request_actions = {
     'new_fog': __add_fog__,
     'get_fog': __get_fog__,
-    'update_pacientes': __update_dados__,
+    'update_pacientes': __update_dados__
 }
 
 def __queue_requests__(client, userdata, msg):
@@ -72,7 +72,7 @@ request_handler_thread.setDaemon(True)
 request_handler_thread.start()
 client.conect("26.181.221.42", 1883, callback = __queue_requests__)
 client.client.max_queued_messages_set(1000000)
-client.subscribe('main_server/#', qos=1)
+client.subscribe('main_server/#', qos = 1)
 
 def publish(topic, mensagem):
     client.publish(topic, mensagem)

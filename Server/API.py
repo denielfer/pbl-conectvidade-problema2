@@ -1,4 +1,4 @@
-from flask import Flask,jsonify
+from flask import Flask, jsonify
 from json import JSONDecodeError
 import mqtt_handler
 import requests
@@ -12,10 +12,10 @@ def api_get(quantidade):
         Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema
     '''
     # try:
-    pacientes = SortedList(key=lambda x: x['gravidade'])
+    pacientes = SortedList(key = lambda x: x['gravidade'])
     for a in mqtt_handler.fogs:
-        for b in requests.get('http://'+mqtt_handler.fogs[a]+f'/pacientes/{quantidade}').json()['pacientes']:
-            b["href"] = 'http://'+mqtt_handler.fogs[a]+f'/paciente/{b["id"]}'
+        for b in requests.get('http://'+ mqtt_handler.fogs[a] + f'/pacientes/{quantidade}').json()['pacientes']:
+            b["href"] = 'http://'+ mqtt_handler.fogs[a] + f'/paciente/{b["id"]}'
             pacientes.add(b)
     print(f'[API] resquest 200')
     a = jsonify({'pacientes':pacientes[::-1][:int(quantidade)]})
@@ -28,5 +28,5 @@ def api_get(quantidade):
     #     a.headers["Access-Control-Allow-Origin"] = "*"
     #     return a,200
         
-app.run(host="26.181.221.42", port=17892,debug=True)
+app.run(host = "26.181.221.42", port = 17892, debug = True)
     

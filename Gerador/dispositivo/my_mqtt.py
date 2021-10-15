@@ -6,7 +6,7 @@ class My_mqtt:
         self.client = mqtt.Client()
         self.topics = []
         
-    def subscribe(self, topic, qos=1):
+    def subscribe(self, topic, qos = 1):
         '''
             Função que inscreve esse client em um tópico especifico
             por default temos qos = 1
@@ -16,7 +16,7 @@ class My_mqtt:
             @param topic: str, topico no qual o cliente se increvera
             @param qos: int, qualidade da comunicação
         '''
-        self.client.subscribe(topic,qos=qos)
+        self.client.subscribe(topic, qos = qos)
 
     def __on_connect__(self, client, userdata, flags, rc):
         '''
@@ -48,7 +48,7 @@ class My_mqtt:
             print('[MY_MQTT] Using passed callback')
             self.client.on_message = callback
         self.client.connect(ip, port, keep_alive)
-        self.running_thread = threading.Thread(target=self.__main_loop__)
+        self.running_thread = threading.Thread(target = self.__main_loop__)
         self.running_thread.setDaemon(True)
         self.running_thread.start()
 
@@ -64,7 +64,7 @@ class My_mqtt:
         '''
         self.client.disconect()
     
-    def publish(self, topic, payload, qos=1):
+    def publish(self, topic, payload, qos = 1):
         '''
             Publica {payload} no {topic} com o qos informado
 
@@ -74,7 +74,7 @@ class My_mqtt:
                 exista, para dic ele vira uma string que pode ser serializado por um json) 
             @param qos: int, informa a qualidade do serviço
         '''
-        self.client.publish(topic = topic,payload = payload,qos = qos)
+        self.client.publish(topic = topic, payload = payload, qos = qos)
 
     def unsubscribe(self, topic):
         '''
@@ -92,9 +92,9 @@ if(__name__ == '__main__'):
     def __print__(client, userdata, msg):
         print(msg.payload)
 
-    client.subscribe('oi',__print__)
+    client.subscribe('oi', __print__)
     print("waiting")
     from time import sleep
     sleep(1)
-    client.subscribe('tchau',__print__)
+    client.subscribe('tchau', __print__)
     sleep(30)
