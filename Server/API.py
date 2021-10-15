@@ -1,4 +1,4 @@
-from flask import Flask,jsonify
+from flask import Flask, jsonify
 from json import JSONDecodeError
 import mqtt_handler
 import requests
@@ -40,5 +40,5 @@ def api_get_fogs():
     return a,200
 
         
-app.run(host="26.181.221.42", port=17892,debug=True)
+app.run(host = "26.181.221.42", port = 17892, debug = True)
     

@@ -5,7 +5,7 @@ from .dispositivo import Dispositivo
 
 # Rotas usadas:
 #
-# 'dispositivos/set_fog/__id_device__' -> no pacote deve ter uma string contendo a rota que sera usada
+# 'dispositivos/set_fog/__id_device__' -> no pacote deve ter uma string contendo a rota que será usada
 #
 #
 #
