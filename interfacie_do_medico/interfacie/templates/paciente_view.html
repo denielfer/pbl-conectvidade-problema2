@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %} {{id}} {% endblock %}
+{%block head%}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+{%endblock%}
+{% block content %}
+    <div class="center">
+        <h1>Monitorando paciente: {{id}}</h1>
+    </div>
+    <div id='information_table' class='center' style='user-select: none;'>
+    </div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    function get_dados(){
+        var dados = undefined
+        $.ajax({
+            type: "get",
+            url: "{{server_url_paciente}}",
+            success: function (response) {
+                paciente = response['{{id}}']
+                console.log(paciente)
+                let table = ""
+                {%for key in keys %}
+                    table+=`<div><h3>{{key}} : ${paciente["{{key}}"]} </h3></div>`
+                {%endfor%}
+                information_table.innerHTML = table
+            },
+            error: function(error) {
+                alert('Server Offline Tentando novamente em instantes')
+                devices_table.innerHTML = "<h1 class='center'>Server Offline </h1>"
+            }
+        })
+    }
+    $( document ).ready(function(){
+        setInterval(() => {
+            get_dados()
+        }, 1000);
+    })
+</script>
+{% endblock %}

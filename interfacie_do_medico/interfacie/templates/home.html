@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %} Monitoramento {% endblock %}
+{%block head%}
+<style type="text/css">
+    td{
+        padding: 5px 8px;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+{%endblock%}
+{% block content %}
+    <div id='delay'></div>
+    <div class='center' onclick=get_devices() style=" user-select: none; ">
+        <p>Numero de pacientes que serão mostrados: <input id='number_of_devices' type='number' step='1' minimum='0' min="0" value='20'></p>
+    </div>
+    <div id='devices_table' class='center' style='user-select: none;'>
+    </div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    function get_number_of_devices(){
+        return Number(document.getElementById('number_of_devices').value)
+    }
+    function get_devices(){
+        let num_devices = get_number_of_devices();
+        var dados = undefined
+        // console.log(num_devices)
+        let a = new Date().getTime()
+        $.ajax({
+            type: "get",
+            url: "http://26.181.221.42:17892/pacientes/"+num_devices,
+            success: function (response) {
+                pacientes = response.pacientes
+                let table ='<table> <tr><th>Identificador</th><th>  Gravidade</th></tr>'
+                // console.log(pacientes)
+                for(let a =0; a< pacientes.length; a++) {
+                    // console.log(pacientes[a])
+                    // console.log(pacientes[a].id, pacientes[a].fog_id)
+                    table+=`<tr onmouseover="this.style.color='${pacientes[a].gravidade>100?'red':"green"}'"
+                            onmouseout=this.style.color=''
+                            onclick = paciente_selected('${pacientes[a].id}','${pacientes[a].href}')>
+                                <td>${pacientes[a].id}</td>
+                                <td>${pacientes[a].gravidade>100?'Grave':"Normal"}</td>
+                            </tr>`
+                }
+                table+='</table>'
+                devices_table.innerHTML = table
+                // console.log(response)
+            },
+            error: function(error) {
+                alert('Server Offline Tentando novamente em instantes')
+                devices_table.innerHTML = "<h1 class='center'>Server Offline </h1>"
+            }
+        })
+        let b = new Date().getTime()
+        console.log(`tempo para ${num_devices} pacientes: ${a} - ${b} = ${b-a}`)
+    }
+    function paciente_selected(id,fog_id) {
+        // var win = window.open(`/paciente/${id}/${fog_id}`, '_blank');
+        // win.focus();
+        // console.log(id,fog_id)
+        let a = new Date().getTime()
+        $.ajax({
+            type: "get",
+            url: `http://${fog_id}/paciente/${id}`,
+            success: function (response) {
+            let b = new Date().getTime()
+            console.log(`tempo para paciente ${id}: ${a} - ${b} = ${b-a} -> ${a-response.time}`)
+                // console.log(response)
+            },
+            error: function(error) {
+                // console.log(error)
+            }
+        })
+    }
+    $( document ).ready(function(){
+        
+        setInterval(() => {
+            get_devices()
+        }, 1000);
+
+    })
+</script>
+{% endblock %}
