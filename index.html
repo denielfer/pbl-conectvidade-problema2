@@ -37,39 +37,60 @@
     <label for="quantidade">Número de pacientes da tabela:</label>
     <input type="number" id="quantidade" placeholder="Quantidade" value="10">
 
-    <!-- Tabela de pacientes -->
-    <table id="table" class="text-white" data-row-style="rowStyle" data-show-refresh="true" data-ajax="ajaxRequest" data-sort-order="desc" data-sort-name="gravidade" data-detail-view="true" data-detail-view-icon="false" data-detail-view-by-click="true" data-detail-formatter="detailFormatter">
-      <thead>
-        <tr>
-          <th data-field="id">ID</th>
-          <th data-field="gravidade" data-formatter="%s" data-sortable=true>Gravidade</th>
-        </tr>
-      </thead>
-    </table>
-    <script>
-      //configura as funções a serem executadas na criação da tela
-      $(document).ready(function() {
-        //construção da tabela ordenando em ordem decrescente de gravidade
-        $('#table').bootstrapTable({
-          data: data,
-          sortStable: true
-        });
-
-        // atualiza a tabela de pacientes a cada 30 segundos
-        // setInterval(function(){
-        //   $('#table').bootstrapTable('refresh');
-        // }, 30000);
+    <div class="row p-5">
+      <div class="col-lg-7">
+        <!-- Tabela de pacientes -->
+        <table width="500px" id="table" class="text-white" data-row-style="rowStyle" data-show-refresh="true" data-ajax="ajaxRequest" data-sort-order="desc" data-sort-name="gravidade" data-detail-view="true" data-detail-view-icon="false" data-detail-view-by-click="true" data-detail-formatter="detailFormatter">
+          <thead>
+            <tr>
+              <th data-field="id">ID</th>
+              <th data-field="gravidade" data-formatter="%s" data-sortable=true>Gravidade</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div class="col-lg-4">
+        <div class="card-dark">
+          <div id="card" class="card-body text-center">
+            <h5 class="card-title">Não há paciente selecionado</h5>
+            <p class="card-text"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    //configura as funções a serem executadas na criação da tela
+    $(document).ready(function() {
+      //construção da tabela ordenando em ordem decrescente de gravidade
+      $('#table').bootstrapTable({
+        data: data,
+        sortStable: true
       });
 
-      //função executada quando é clicado em uma linha da tabela
-      function detailFormatter(index, row) {
-        var html = [];
-        var jsonData = {}
+      // atualiza a tabela de pacientes a cada 2 segundos
+      setInterval(function(){
+        $('#table').bootstrapTable('refresh');
+      }, 2000);
+      
+      setInterval(function() {
+        getPatient()
+      }, 1000);
+    });
 
+    var endereco = null
+    var id = null
+
+    //função executada quando é clicado em uma linha da tabela
+    function getPatient() {
+      var html = [];
+      var jsonData = {};
+      var card = document.getElementById('card');
+
+      if(endereco) {
         //requisição à FOG pelos dados completos do respectivo paciente
         $.ajax({
             method: 'GET',
-            url: row.href,
+            url: endereco,
             async: false,
             success: function (response) {
               jsonData = response;
@@ -82,49 +103,59 @@
         });
 
         //adiciona os dados na tela, abaixo do paciente clicado
-        html.push('<p class="text-start"><b>Frequência Cardíaca: </b> ' + jsonData['Frequencia Cardiaca'] + ' bat/min' + '</p>')
-        html.push('<p class="text-start"><b>Frequência Respiratória: </b> ' + jsonData['Frequencia Respiratoria'] + ' mov/min' + '</p>')
-        html.push('<p class="text-start"><b>Pressão: </b> ' + jsonData['Max Pressao'] + ' mm Hg' + '</p>')
-        html.push('<p class="text-start"><b>Oxigenação: </b> ' + jsonData['Oxigenacao'] + ' %' + '</p>')
-        html.push('<p class="text-start"><b>Temperatura: </b> ' + jsonData['Temperatura'] + ' °C' + '</p>')
-        return html.join('')
+        html = '<h5 class="mb-4"><b>' + id + '</h5>' +
+        '<p class="text-start"><b>Frequência Cardíaca: </b> ' + jsonData['Frequencia Cardiaca'] + ' bat/min' + '</p>' +
+        '<p class="text-start"><b>Frequência Respiratória: </b> ' + jsonData['Frequencia Respiratoria'] + ' mov/min' + '</p>' +
+        '<p class="text-start"><b>Pressão: </b> ' + jsonData['Max Pressao'] + ' mm Hg' + '</p>' +
+        '<p class="text-start"><b>Oxigenação: </b> ' + jsonData['Oxigenacao'] + ' %' + '</p>' +
+        '<p class="text-start"><b>Temperatura: </b> ' + jsonData['Temperatura'] + ' °C' + '</p>'
+        card.innerHTML = "";
+        card.innerHTML = html;
+      }      
+    }
+
+    //função executada quando é clicado em uma linha da tabela
+    function detailFormatter(index, row) {
+      endereco = row.href
+      id = row.id
+      getPatient();
+      // return html.join('');
+    }
+    
+    function ajaxRequest(params) {
+      //pega o valor do campo quantidade, para buscar N pacientes mais graves
+      var qtd = document.getElementById("quantidade").value;
+
+      //requisição para o servidor buscando os N pacientes mais graves ordenados
+      $.ajax({
+          method: 'GET',
+          url: 'http://26.181.221.42:17892/pacientes/' + qtd,
+          async: true,
+          success: function (response) {
+            // console.log(response);
+
+            //construção da tabela com inserção dos dados mínimos dos pacientes
+            params.success({
+              "rows": response.pacientes,
+              "total": length
+            })
+          },
+          error: function (e) {
+              alert("Servidor indisponível")
+              console.log(e);
+          }
+      });
+    }
+
+    //json genérico para criação da tabela
+    var data = [{
+        'id': null,
+        'gravidade': null
       }
-      
-      function ajaxRequest(params) {
-        //pega o valor do campo quantidade, para buscar N pacientes mais graves
-        var qtd = document.getElementById("quantidade").value;
-
-        //requisição para o servidor buscando os N pacientes mais graves ordenados
-        $.ajax({
-            method: 'GET',
-            url: 'http://26.181.221.42:17892/pacientes/' + qtd,
-            async: true,
-            success: function (response) {
-              console.log(response);
-
-              //construção da tabela com inserção dos dados mínimos dos pacientes
-              params.success({
-                "rows": response.pacientes,
-                "total": length
-              })
-            },
-            error: function (e) {
-                alert("Servidor indisponível")
-                console.log(e);
-            }
-        });
-      }
-
-      //json genérico para criação da tabela
-      var data = [{
-          'id': null,
-          'gravidade': null
-        }
-      ]
+    ]
 
     //adiciona background vermelho aos pacientes em estado grave(gravidade > 100)
     function rowStyle(row, index) {
-      console.log(row)
       if (row.gravidade > 100) {
           return {
             classes: 'bg-red'
@@ -134,7 +165,6 @@
       }
     }
   </script>
-  </div>
 </body>
 
 </html>
