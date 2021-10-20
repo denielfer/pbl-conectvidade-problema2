@@ -3,6 +3,10 @@ from .my_mqtt import My_mqtt
 from json import dumps
 from .dispositivo import Dispositivo
 
+import time as TiMe___ 
+def millis():
+    return int(round(TiMe___.time() * 1000))
+
 # Rotas usadas:
 #
 # 'dispositivos/set_fog/__id_device__' -> no pacote deve ter uma string contendo a rota que será usada
@@ -27,7 +31,7 @@ def get_fog(id_dispositivo):
 def update_paciente_function(dispositivo:Dispositivo):
     if(dispositivo.id in dispositivo_fog):
         fog = dispositivo_fog[dispositivo.id]
-        client_mqtt.publish(f'fogs/{fog}/update_data/{dispositivo.id}/{dispositivo.gravidade}/{dispositivo.old_gravidade}',
+        client_mqtt.publish(f'fogs/{fog}/update_data/{dispositivo.id}/{dispositivo.gravidade}/{dispositivo.old_gravidade}/{millis()}',
                             dumps(dispositivo.get_medicoes()))
     else:
         get_fog(dispositivo.id)

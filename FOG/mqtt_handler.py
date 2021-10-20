@@ -7,6 +7,10 @@ from sortedcontainers import SortedList
 HOST = '26.181.221.42'
 PORT = 18956
 
+import time as TiMe___ 
+def millis():
+    return int(round(TiMe___.time() * 1000))
+
 # decoder = json.JSONDecoder()
 # encoder = json.JSONEncoder()
 my_client = My_mqtt()
@@ -14,11 +18,11 @@ my_client = My_mqtt()
 # Padrão rotas MQTT
 # o que tem o padrão "__nome_paciente__" representa variável então isso seria substituído pelo nome do paciente 
 # Para atualizar estado do paciente:
-#   'fogs/__fog_identificador__/update_data/__identificador_do_paciente__/__gravidade__/__gravidade_anterior__'
+#   'fogs/__fog_identificador__/update_data/__identificador_do_paciente__/__gravidade__/__gravidade_anterior__/__tempo_que_foi_enviado__'
 
 # para armazenar os pacientes usaremos uma estrutura de dados com o(log(n)) para adição, acesso e 
-pacientes_por_gravidade = SortedList(key = lambda x: x['gravidade'])  # guarda uma tupla: (__id_paciente__, __gravidade__)
-pacientes_dados = {}  # guarda os dados do paciente com chave id do paciente: __id_do_paciente__: __dados__
+pacientes_por_gravidade = SortedList(key = lambda x: x['gravidade'])  # guarda uma tupla: {"id":__id_paciente__,"gravidade":__gravidade__}
+pacientes_dados = {}  # guarda os dados do paciente com chave id do paciente: {__id_do_paciente__: __dados__}
 
 def __update_data__(topic_splited, payload, client):
     '''
@@ -27,7 +31,7 @@ def __update_data__(topic_splited, payload, client):
         Salvando o nome e gravidade em uma sorted list que ordena os dados pela gravidade e os dados do paciente em um
             dicionário.
     '''
-    print(f'{topic_splited[3]} gravidade: {topic_splited[4]} estado: {"Grave" if float(topic_splited[4]) > 100 else "Normal"}')
+    print(f'{topic_splited[3]} gravidade: {topic_splited[4]} estado: {"Grave" if float(topic_splited[4]) > 100 else "Normal"} delay:{millis()-int(topic_splited[6])}')
     try: # tentamos remover o dado antigo de gravidade do paciente na lista
         pacientes_por_gravidade.pop(pacientes_por_gravidade.index({'id': topic_splited[3], 'gravidade': float(topic_splited[5])}))
     except:
@@ -39,6 +43,7 @@ def __update_data__(topic_splited, payload, client):
         print(f'[MQTT_HANDLER] not able to decode payload: {payload}')
         return
     pacientes_por_gravidade.add({'id': topic_splited[3], 'gravidade': float(topic_splited[4])})
+    dados["time"] = topic_splited[6]
     pacientes_dados[topic_splited[3]] = dados
 
 request_actions = {
@@ -64,7 +69,7 @@ def __request_handler__(is_persistent: bool):
                 requests_count -= 1
             else:
                 if(is_persistent):
-                    sleep(.05)
+                    pass
                 else:
                     #print("thread handler adicional encerada ******************************************************************")
                     break
