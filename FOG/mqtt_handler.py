@@ -4,7 +4,7 @@ import threading
 import json
 from sortedcontainers import SortedList
 
-HOST = '26.181.221.42'
+HOST = '26.165.180.216'
 PORT = 18956
 
 import time as TiMe___ 

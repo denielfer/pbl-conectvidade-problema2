@@ -88,13 +88,17 @@
 
       if(endereco) {
         //requisição à FOG pelos dados completos do respectivo paciente
+        var inicial = performance.now();
         $.ajax({
             method: 'GET',
             url: endereco,
             async: false,
             success: function (response) {
+              let tempo = performance.now() - inicial
+              console.log("API FOG: " + parseFloat(tempo.toFixed(2)) + "ms")
               jsonData = response;
-              console.log(jsonData);
+              
+              // console.log(jsonData);
             },
             error: function (e) {
                 alert("Servidor indisponível")
@@ -116,7 +120,7 @@
 
     //função executada quando é clicado em uma linha da tabela
     function detailFormatter(index, row) {
-      endereco = row.href
+      endereco = "http://" + row.href + "/paciente/" + row.id
       id = row.id
       getPatient();
       // return html.join('');
@@ -126,6 +130,7 @@
       //pega o valor do campo quantidade, para buscar N pacientes mais graves
       var qtd = document.getElementById("quantidade").value;
 
+      let inicial = performance.now();
       //requisição para o servidor buscando os N pacientes mais graves ordenados
       $.ajax({
           method: 'GET',
@@ -133,6 +138,9 @@
           async: true,
           success: function (response) {
             // console.log(response);
+
+            let tempo = performance.now() - inicial
+            console.log("API server: " + parseFloat(tempo.toFixed(2)) + "ms")
 
             //construção da tabela com inserção dos dados mínimos dos pacientes
             params.success({
