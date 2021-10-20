@@ -6,15 +6,7 @@ SENSORES_NOMES = ['Temperatura', 'Frequencia Respiratoria', 'Frequencia Cardiaca
 
 def get_random_modify(goal, value, step = 5):
     return round(((goal-value) * random()) + (choice([-1, 1])) * (step * random()), 2)
-
-# DADOS_DEFAULT={
-#     'Temperatura':35.3,
-#     'Frequencia Respiratoria': 10,
-#     'Frequencia Cardiaca': 100,
-#     'Oxigenacao':100,
-#     'Max Pressao':120,
-# }
-
+    
 def get_data_for_new_device():
     return {
     'Temperatura': get_random_modify(35.3,0,15), #número aleatório entre 0 e 35.3 +ou- 0 a 15

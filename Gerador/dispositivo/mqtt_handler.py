@@ -6,10 +6,6 @@ from .dispositivo import Dispositivo
 # Rotas usadas:
 #
 # 'dispositivos/set_fog/__id_device__' -> no pacote deve ter uma string contendo a rota que será usada
-#
-#
-#
-#
 
 dispositivo_fog = {}
 
