@@ -33,6 +33,8 @@
             type: "get",
             url: "http://26.181.221.42:17892/pacientes/"+num_devices,
             success: function (response) {
+                let b = new Date().getTime()
+                console.log(`tempo para ${num_devices} pacientes: ${a} - ${b} = ${b-a}`)
                 pacientes = response.pacientes
                 let table ='<table> <tr><th>Identificador</th><th>  Gravidade</th></tr>'
                 // console.log(pacientes)
@@ -55,8 +57,6 @@
                 devices_table.innerHTML = "<h1 class='center'>Server Offline </h1>"
             }
         })
-        let b = new Date().getTime()
-        console.log(`tempo para ${num_devices} pacientes: ${a} - ${b} = ${b-a}`)
     }
     function paciente_selected(id,fog_id) {
         // var win = window.open(`/paciente/${id}/${fog_id}`, '_blank');
@@ -67,8 +67,8 @@
             type: "get",
             url: `http://${fog_id}/paciente/${id}`,
             success: function (response) {
-            let b = new Date().getTime()
-            console.log(`tempo para paciente ${id}: ${a} - ${b} = ${b-a} -> ${a-response.time}`)
+                let b = new Date().getTime()
+                console.log(`tempo para paciente ${id}: ${a} - ${b} = ${b-a} -> ${a-response.time}`)
                 // console.log(response)
             },
             error: function(error) {

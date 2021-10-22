@@ -31,7 +31,8 @@ def __update_data__(topic_splited, payload, client):
         Salvando o nome e gravidade em uma sorted list que ordena os dados pela gravidade e os dados do paciente em um
             dicionário.
     '''
-    print(f'{topic_splited[3]} gravidade: {topic_splited[4]} estado: {"Grave" if float(topic_splited[4]) > 100 else "Normal"} delay:{millis()-int(topic_splited[6])}')
+    delay = millis()-int(topic_splited[6])
+    print(f'{topic_splited[3]} gravidade: {topic_splited[4]} estado: {"Grave" if float(topic_splited[4]) > 100 else "Normal"} delay:{delay}')
     try: # tentamos remover o dado antigo de gravidade do paciente na lista
         pacientes_por_gravidade.pop(pacientes_por_gravidade.index({'id': topic_splited[3], 'gravidade': float(topic_splited[5])}))
     except:
@@ -44,6 +45,7 @@ def __update_data__(topic_splited, payload, client):
         return
     pacientes_por_gravidade.add({'id': topic_splited[3], 'gravidade': float(topic_splited[4])})
     dados["time"] = topic_splited[6]
+    dados["dalay"] = delay
     pacientes_dados[topic_splited[3]] = dados
 
 request_actions = {
