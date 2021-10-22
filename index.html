@@ -70,15 +70,16 @@
       // atualiza a tabela de pacientes a cada 2 segundos
       setInterval(function(){
         $('#table').bootstrapTable('refresh');
-      }, 2000);
+      }, 4000);
       
       setInterval(function() {
         getPatient()
-      }, 1000);
+      }, 2000);
     });
 
     var endereco = null
     var id = null
+    var medidas = []
 
     //função executada quando é clicado em uma linha da tabela
     function getPatient() {
@@ -88,13 +89,17 @@
 
       if(endereco) {
         //requisição à FOG pelos dados completos do respectivo paciente
+        var inicial = performance.now();
         $.ajax({
             method: 'GET',
             url: endereco,
             async: false,
             success: function (response) {
+              let tempo = performance.now() - inicial
+              console.log("API FOG: " + parseFloat(tempo.toFixed(2)) + "ms")
               jsonData = response;
-              console.log(jsonData);
+              
+              // console.log(jsonData);
             },
             error: function (e) {
                 alert("Servidor indisponível")
@@ -116,7 +121,7 @@
 
     //função executada quando é clicado em uma linha da tabela
     function detailFormatter(index, row) {
-      endereco = row.href
+      endereco = "http://" + row.href + "/paciente/" + row.id
       id = row.id
       getPatient();
       // return html.join('');
@@ -126,6 +131,7 @@
       //pega o valor do campo quantidade, para buscar N pacientes mais graves
       var qtd = document.getElementById("quantidade").value;
 
+      let inicial = performance.now();
       //requisição para o servidor buscando os N pacientes mais graves ordenados
       $.ajax({
           method: 'GET',
@@ -134,6 +140,10 @@
           success: function (response) {
             // console.log(response);
 
+            let tempo = performance.now() - inicial
+            console.log("API server: " + parseFloat(tempo.toFixed(2)) + "ms")
+
+            calcTime(tempo)
             //construção da tabela com inserção dos dados mínimos dos pacientes
             params.success({
               "rows": response.pacientes,
@@ -163,6 +173,18 @@
       }
       return {
       }
+    }
+
+    function calcTime(time) {
+      medidas.push(time)
+      if (medidas.length == 10) {
+        let media = 0
+        for(let i = 0; i < medidas.length; i++)
+          media += medidas[i]
+        media /= 10
+        console.log("A média de tempo foi " + media + "ms")
+      }
+
     }
   </script>
 </body>
