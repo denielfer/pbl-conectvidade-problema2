@@ -1,11 +1,13 @@
 from my_mqtt import My_mqtt
-from time import sleep
 import threading
+import requests
 import json
 from sortedcontainers import SortedList
 
-HOST = '26.165.180.216'
-PORT = 18956
+MAIN_SERVER_URL='http://26.181.221.42:17892'
+HOST = '26.181.221.42'
+PORT_API = 18931
+PORT_BROKER = 1883
 
 import time as TiMe___ 
 def millis():
@@ -18,7 +20,7 @@ my_client = My_mqtt()
 # Padrão rotas MQTT
 # o que tem o padrão "__nome_paciente__" representa variável então isso seria substituído pelo nome do paciente 
 # Para atualizar estado do paciente:
-#   'fogs/__fog_identificador__/update_data/__identificador_do_paciente__/__gravidade__/__gravidade_anterior__/__tempo_que_foi_enviado__'
+#   '__fog_id__/update_data/__identificador_do_paciente__/__gravidade__/__gravidade_anterior__/__tempo_que_foi_enviado__'
 
 # para armazenar os pacientes usaremos uma estrutura de dados com o(log(n)) para adição, acesso e 
 pacientes_por_gravidade = SortedList(key = lambda x: x['gravidade'])  # guarda uma tupla: {"id":__id_paciente__,"gravidade":__gravidade__}
@@ -31,22 +33,22 @@ def __update_data__(topic_splited, payload, client):
         Salvando o nome e gravidade em uma sorted list que ordena os dados pela gravidade e os dados do paciente em um
             dicionário.
     '''
-    delay = millis()-int(topic_splited[6])
-    print(f'{topic_splited[3]} gravidade: {topic_splited[4]} estado: {"Grave" if float(topic_splited[4]) > 100 else "Normal"} delay:{delay}')
+    delay = millis()-int(topic_splited[5])
+    print(f'{topic_splited[2]} gravidade: {topic_splited[3]} estado: {"Grave" if float(topic_splited[3]) > 100 else "Normal"} delay:{delay}')
     try: # tentamos remover o dado antigo de gravidade do paciente na lista
-        pacientes_por_gravidade.pop(pacientes_por_gravidade.index({'id': topic_splited[3], 'gravidade': float(topic_splited[5])}))
+        pacientes_por_gravidade.pop(pacientes_por_gravidade.index({'id': topic_splited[2], 'gravidade': float(topic_splited[4])}))
     except:
-        print(f"[MQTT_HANDLER] Não existe registro anterior do paciente {topic_splited[3]}")
+        print(f"[MQTT_HANDLER] Não existe registro anterior do paciente {topic_splited[2]}")
 
     try:
         dados = json.loads(payload)
     except:
         print(f'[MQTT_HANDLER] not able to decode payload: {payload}')
         return
-    pacientes_por_gravidade.add({'id': topic_splited[3], 'gravidade': float(topic_splited[4])})
-    dados["time"] = topic_splited[6]
+    pacientes_por_gravidade.add({'id': topic_splited[2], 'gravidade': float(topic_splited[3])})
+    dados["time"] = topic_splited[5]
     dados["dalay"] = delay
-    pacientes_dados[topic_splited[3]] = dados
+    pacientes_dados[topic_splited[2]] = dados
 
 request_actions = {
     'update_data': __update_data__
@@ -64,10 +66,10 @@ def __request_handler__(is_persistent: bool):
                 client, userdata, msg = requests_to_process.pop(0)
                 #print(msg.topic.split('/')[2])
                 topic_splited = msg.topic.split('/')
-                if(topic_splited[2] in request_actions):
-                    request_actions[topic_splited[2]](topic_splited, msg.payload, client = my_client)
+                if(topic_splited[1] in request_actions):
+                    request_actions[topic_splited[1]](topic_splited, msg.payload, client = my_client)
                 else:
-                    print(f'[MQTT_HANDLER] Erro on process no action found: {topic_splited[2]}')
+                    print(f'[MQTT_HANDLER] Erro on process no action found: {topic_splited[1]}')
                 requests_count -= 1
             else:
                 if(is_persistent):
@@ -102,7 +104,9 @@ my_client.conect(callback = __queue_requests__)
 request_handler_thread = threading.Thread(target = __request_handler__, args=(True,))
 request_handler_thread.setDaemon(True)
 request_handler_thread.start()
-my_client.subscribe(f'fogs/{fog_name}/#', qos = 1)
-my_client.publish(f"main_server/new_fog/{fog_name}", f'{HOST}:{PORT}')
+my_client.subscribe(f'{fog_name}/#', qos = 1)
+requests.post(MAIN_SERVER_URL+f'/add_fogs/{fog_name}',json={'href':f"{HOST}:{PORT_API}",
+                                                                'ip':f"{HOST}",
+                                                                "port":PORT_BROKER,"is_final":True})
 if(__name__ == '__main__'):
     input()

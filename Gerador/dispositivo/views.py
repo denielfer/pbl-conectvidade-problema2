@@ -5,9 +5,6 @@ from .dispositivo import Dispositivo
 from random import choices
 from string import hexdigits
 from .import mqtt_handler
-from time import sleep
-
-mqtt_handler.start_mqtt()
 
 dispositivos = {}
 
