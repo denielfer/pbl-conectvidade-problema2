@@ -1,12 +1,16 @@
 from flask import Flask, jsonify, request
 import requests
-from random import choice
+from random import choice,choices
+from string import hexdigits
 from sortedcontainers import SortedList
+import sys
 
+IP = sys.argv[2] if(len(sys.argv) >3 ) else "26.181.221.42"
+PORT = sys.argv[3] if(len(sys.argv) > 3) else sys.argv[2] if(len(sys.argv) > 2) else 17892
+
+id_server= sys.argv[1] if(len(sys.argv) > 1) else''.join(''.join(choices(hexdigits, k = 15)).upper())
 fogs = {}
 fogs_list_ids = []
-index_next_fog = 0
-index = 0
 app = Flask(__name__)
 
 @app.route('/pacientes/<quantidade>', methods=['GET'])
@@ -17,7 +21,7 @@ def api_get(quantidade):
     try:
         pacientes = SortedList(key=lambda x: x['gravidade'])
         for a in fogs:
-            for b in requests.get('http://'+fogs[a]+f'/pacientes/{quantidade}').json()['pacientes']:
+            for b in requests.get('http://'+fogs[a]['href']+f'/pacientes/{quantidade}').json()['pacientes']:
                 b["href"] = fogs[a]
                 pacientes.add(b)
         a = jsonify({'pacientes':pacientes[::-1][:int(quantidade)]})
@@ -67,5 +71,21 @@ def api_get_fog():
     except:
         return '',404
 
-app.run(host = "26.181.221.42", port = 17892, debug = True)
-    
+@app.route('/connect_with_upper_layer', methods=['GET','POST'])
+def connect_with_upper_layer():
+    if(request.method == "POST"):
+        if(request.form['href'] == f'{IP}:{PORT}'):
+            return 'Para né',400
+        requests.post(f'http://{request.form["href"]}/add_fogs/{id_server}',json={'href':f"{IP}:{PORT}",
+                                                                'ip':IP,
+                                                                "port":PORT,"is_final":False})
+        return 'O request foi enviado',200
+    elif(request.method == "GET"):
+        return '''<form action="/connect_with_upper_layer" method="POST">
+                    <p>Digite o ip:port do servidor, sera adicionado http:// no inicio e a rota enviada é /add_fogs/__id_deste_server__</p>
+                    <input type="text" name="href">
+                    <button style="width: 80px;" type="submit">Enviar</button>
+                </form>''',200
+    return 'WTF',200
+
+app.run(host = IP, port = PORT, debug = True)
