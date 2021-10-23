@@ -38,4 +38,4 @@ def api_get_pacientes(quantidade:int):
     a.headers["Access-Control-Allow-Origin"] = "*"
     return a
 
-app.run(host = mqtt_handler.HOST, port = mqtt_handler.PORT)
+app.run(host = mqtt_handler.HOST, port = mqtt_handler.PORT_API)
