@@ -4,8 +4,8 @@ import requests
 import json
 from sortedcontainers import SortedList
 
-MAIN_SERVER_URL='http://26.181.221.42:17892'
-HOST = '26.181.221.42'
+MAIN_SERVER_URL='http://26.181.221.42:17892' # ip do main server para o qual a requisição para adiciona esta fog na sua lista de fogs
+HOST = '26.181.221.42' # Este ip é considerado o ip no qual tem o mqtt e no qual a api estara rodando
 PORT_API = 18931
 PORT_BROKER = 1883
 
@@ -55,39 +55,52 @@ request_actions = {
 }
 
 requests_to_process = []
+# mantemos um contador atualizado de quantos requestes estao na fila para criar 
+# mais thread para lidar com as mensagem caso a fila fique muito grande
 requests_count = 0
 requests_count_check_for_thread = 0
 
 def __request_handler__(is_persistent: bool):
+    '''
+        Função que lida com  as mensagens recebidas pelo MQTT
+
+        Esta função estara removendo as mensagens que estao na fila e chamando a função predefinida para lida com os requestes.
+        As açoes soa definidas na variavel: 'request_actions' na qual temos um dicionario que mapeia a palavra chave com a função 
+            que lida com a mensagem determinada
+    '''
     global requests_count
     while True:
-        try:
-            if(len(requests_to_process) != 0):
-                client, userdata, msg = requests_to_process.pop(0)
+        try: # caso ocorra um erro nao queremos que a thread que lida com as mensagens pare
+            if(len(requests_to_process) != 0): # caso hajam mensagens para serem lidas
+                client, userdata, msg = requests_to_process.pop(0) # pegamos a primeira
                 #print(msg.topic.split('/')[2])
-                topic_splited = msg.topic.split('/')
-                if(topic_splited[1] in request_actions):
-                    request_actions[topic_splited[1]](topic_splited, msg.payload, client = my_client)
-                else:
+                topic_splited = msg.topic.split('/') # quebramos o seus topicos para sabermos qual ação
+                if(topic_splited[1] in request_actions): # se a ação estiver no dicionario de ações 
+                    request_actions[topic_splited[1]](topic_splited, msg.payload, client = my_client) # fazemos a ação selecionada
+                else: # caso contrario printamos que determinada ação nao foi definida
                     print(f'[MQTT_HANDLER] Erro on process no action found: {topic_splited[1]}')
-                requests_count -= 1
-            else:
-                if(is_persistent):
-                    pass
-                else:
+                requests_count -= 1 
+            else: # caso nao tenha mais mensagens na fila
+                if(is_persistent): # se for uma thread persistente
+                    pass # volta a verificar se tem mensagens
+                else: # caso contrario ela termina sua execução
                     #print("thread handler adicional encerada ******************************************************************")
                     break
         except Exception as e:
             print(f'[MQTT_HANDLER] Erro on process {msg.topic}:{msg.payload} Exception: {e}')
 
 def __queue_requests__(client, userdata, msg):
+    '''
+        Função que adiciona mensagens MQTT recebidas na fila de mensagens para serem lidas
+    '''
     requests_to_process.append((client, userdata, msg))
     global requests_count
     requests_count += 1
-    if(requests_count > 100):
+    if(requests_count > 100): # se fila tiver mais de 100 mensagens na fila
         global requests_count_check_for_thread
         requests_count_check_for_thread+=1
-        if(requests_count_check_for_thread > 50):
+        if(requests_count_check_for_thread > 50): # e nos verificamos que existe mais de 100 mensagens na fila nas ultimas 50 adições
+            #criamos uma thread nova
             requests_count_check_for_thread = 0
             #print(f"[MQTT_HANDLER] New Thread created requests count {requests_count} //////////////////////////////////////////")
             _thread = threading.Thread(target = __request_handler__, args=(False,))
@@ -95,16 +108,21 @@ def __queue_requests__(client, userdata, msg):
             _thread.start()
 
 def get_pacientes_por_prioridade(quantidade: int):
+    '''
+        Função que retorna uma lista dos {quantidade} pacientes mais gravez do sistema, ordenados por gavidade de forma decrecente
+    '''
     quantidade = int(quantidade)
     return pacientes_por_gravidade[::-1][:quantidade]
 
 fog_name = input("Digite o identificador da fog: ")
-my_client.conect(callback = __queue_requests__)
+my_client.conect(ip=HOST,callback = __queue_requests__)
 # print('dfc')
+#iniciamos a thread que lida com as respostas da fila de mensagens
 request_handler_thread = threading.Thread(target = __request_handler__, args=(True,))
 request_handler_thread.setDaemon(True)
 request_handler_thread.start()
-my_client.subscribe(f'{fog_name}/#', qos = 1)
+my_client.subscribe(f'{fog_name}/#', qos = 1) #nos inscrevemos no topico que a fog houve
+# e enviamos uma mensagem ao servidor indicando que esta fog esta operante
 requests.post(MAIN_SERVER_URL+f'/add_fogs/{fog_name}',json={'href':f"{HOST}:{PORT_API}",
                                                                 'ip':f"{HOST}",
                                                                 "port":PORT_BROKER,"is_final":True})
