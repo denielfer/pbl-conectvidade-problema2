@@ -5,7 +5,7 @@ import json
 from sortedcontainers import SortedList
 
 MAIN_SERVER_URL='http://26.181.221.42:17892'
-HOST = '26.181.221.42'
+HOST = '26.165.180.216'
 PORT_API = 18931
 PORT_BROKER = 1883
 
@@ -99,7 +99,7 @@ def get_pacientes_por_prioridade(quantidade: int):
     return pacientes_por_gravidade[::-1][:quantidade]
 
 fog_name = input("Digite o identificador da fog: ")
-my_client.conect(callback = __queue_requests__)
+my_client.conect(ip = HOST, callback = __queue_requests__)
 # print('dfc')
 request_handler_thread = threading.Thread(target = __request_handler__, args=(True,))
 request_handler_thread.setDaemon(True)
