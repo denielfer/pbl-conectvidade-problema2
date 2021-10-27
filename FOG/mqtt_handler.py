@@ -96,7 +96,7 @@ def __queue_requests__(client, userdata, msg):
 
 def get_pacientes_por_prioridade(quantidade: int):
     quantidade = int(quantidade)
-    return pacientes_por_gravidade[::-1][:quantidade]
+    return pacientes_por_gravidade[-quantidade:]
 
 fog_name = input("Digite o identificador da fog: ")
 my_client.conect(ip = HOST, callback = __queue_requests__)
