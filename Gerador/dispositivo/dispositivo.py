@@ -40,8 +40,10 @@ class Dispositivo:
             'Max Pressao': [120,5],
         }
     }
-
+    quantidade_dispositivos = 0
     def __init__(self, id, tendencia, send_function = SEND_FUNCTION_DEFAULT, dados_dos_sensores = None):
+        self.codigo = Dispositivo.quantidade_dispositivos
+        Dispositivo.quantidade_dispositivos+=1
         self.id = id
         self.send_function = send_function
         self.medicoes = dados_dos_sensores if dados_dos_sensores else get_data_for_new_device()

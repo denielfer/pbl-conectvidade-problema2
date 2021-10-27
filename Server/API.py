@@ -58,13 +58,17 @@ def api_add_fogs(id):
     a.headers["Access-Control-Allow-Origin"] = "*"
     return a,200
     
-@app.route('/get_fog', methods=['GET'])
+@app.route('/get_fog', methods=['POST'])
 def api_get_fog():
     try:
-        fog = choice(fogs_list_ids)
-        # index_next_fog+=1
-        # if(index_next_fog >=len(fogs_list_ids)):
-        #   index_next_fog=0
+        print(request.json)
+        if('codigo' in request.json):
+            fog = fogs_list_ids[int(request.json['codigo'])%len(fogs_list_ids)]
+        else:
+            fog = choice(fogs_list_ids)
+            # index_next_fog+=1
+            # if(index_next_fog >=len(fogs_list_ids)):
+            #   index_next_fog=0
         a = jsonify(fogs[fog])
         a.headers["Access-Control-Allow-Origin"] = "*"
         return a,200

@@ -19,12 +19,9 @@ def start_mqtt(ip,port):
     client_mqtt.conect(ip=ip,port=port)
     return client_mqtt
 
-
-start_mqtt
-
-def get_fog(id_dispositivo):
+def get_fog(id_dispositivo,codigo):
     try:
-        response = requests.get('http://26.181.221.42:17892/get_fog').json()
+        response = requests.post('http://26.181.221.42:17892/get_fog',json={'codigo':codigo}).json()
     except:
         print(f"[DISPOSITIVO] device: '{id_dispositivo}' was not ablet to reach main server or no fog was returned")
         return
@@ -46,4 +43,4 @@ def update_paciente_function(dispositivo:Dispositivo):
                             dumps(dispositivo.get_medicoes()))
     else:
         print(f"[{dispositivo.id}] requesting FOG")
-        get_fog(dispositivo.id)
+        get_fog(dispositivo.id,dispositivo.codigo)
