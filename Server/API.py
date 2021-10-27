@@ -19,12 +19,12 @@ def api_get(quantidade):
         Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema
     '''
     try:
-        pacientes = SortedList(key=lambda x: x['gravidade'])
-        for a in fogs:
-            for b in requests.get('http://'+fogs[a]['href']+f'/pacientes/{quantidade}').json()['pacientes']:
-                b["href"] = fogs[a]
-                pacientes.add(b)
-        a = jsonify({'pacientes':pacientes[::-1][:int(quantidade)]})
+        pacientes = SortedList(key=lambda x: -x['gravidade'])
+        for fog in fogs:
+            for paciente in requests.get('http://'+fogs[fog]['href']+f'/pacientes/{quantidade}').json()['pacientes']:
+                paciente["href"] = fogs[fog]
+                pacientes.add(paciente)
+        a = jsonify({'pacientes':pacientes[:int(quantidade)]})
         #para libera o ajax pegar os dados
         a.headers["Access-Control-Allow-Origin"] = "*"
         return a,200
