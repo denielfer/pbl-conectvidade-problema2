@@ -5,7 +5,7 @@ import json
 from sortedcontainers import SortedList
 
 MAIN_SERVER_URL='http://26.181.221.42:17892'
-HOST = '26.165.180.216'
+HOST = '26.181.221.42'
 PORT_API = 18931
 PORT_BROKER = 1883
 
