@@ -19,6 +19,7 @@ def api_get(quantidade):
     '''
     quantidade = int(quantidade)
     try:
+<<<<<<< HEAD
         if(cache.quantidade < quantidade):
             print('quantidade atualizada')
             cache.quantidade = quantidade
@@ -29,6 +30,14 @@ def api_get(quantidade):
             sleep(.0001)
             dados = cache.get_cache(quantidade)
         a = jsonify({'pacientes':dados})
+=======
+        pacientes = SortedList(key=lambda x: -x['gravidade'])
+        for fog in fogs:
+            for paciente in requests.get('http://'+fogs[fog]['href']+f'/pacientes/{quantidade}').json()['pacientes']:
+                paciente["href"] = fogs[fog]["href"]
+                pacientes.add(paciente)
+        a = jsonify({'pacientes':pacientes[:int(quantidade)]})
+>>>>>>> ed59cc8197ff598d2ef63b455e217fda923b8530
         #para libera o ajax pegar os dados
         a.headers["Access-Control-Allow-Origin"] = "*"
         return a,200
