@@ -22,7 +22,7 @@ def api_get(quantidade):
         pacientes = SortedList(key=lambda x: -x['gravidade'])
         for fog in fogs:
             for paciente in requests.get('http://'+fogs[fog]['href']+f'/pacientes/{quantidade}').json()['pacientes']:
-                paciente["href"] = fogs[fog]
+                paciente["href"] = fogs[fog]["href"]
                 pacientes.add(paciente)
         a = jsonify({'pacientes':pacientes[:int(quantidade)]})
         #para libera o ajax pegar os dados
