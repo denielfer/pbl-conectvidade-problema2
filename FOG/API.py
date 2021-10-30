@@ -32,7 +32,7 @@ def api_get_pacientes(quantidade:int):
     '''
     #retorna um dicionario com o campo 'pacientes' que tem uma lista com o tamanho solicitado contendo os pacientes mais
     #   graves do sistema na seguinte forma: [__id_do_paciente__, {__dados_do_paciente__}]
-    print(quantidade)
+    #print(quantidade)
     a = mqtt_handler.get_pacientes_por_prioridade(quantidade)
     a = jsonify({'pacientes': a})
     a.headers["Access-Control-Allow-Origin"] = "*"

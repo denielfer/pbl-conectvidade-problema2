@@ -1,16 +1,15 @@
 from flask import Flask, jsonify, request
 import requests
+from time import sleep
 from random import choice,choices
 from string import hexdigits
-from sortedcontainers import SortedList
 import sys
+import cache
 
 IP = sys.argv[2] if(len(sys.argv) >3 ) else "26.181.221.42"
 PORT = sys.argv[3] if(len(sys.argv) > 3) else sys.argv[2] if(len(sys.argv) > 2) else 17892
 
 id_server= sys.argv[1] if(len(sys.argv) > 1) else''.join(''.join(choices(hexdigits, k = 15)).upper())
-fogs = {}
-fogs_list_ids = []
 app = Flask(__name__)
 
 @app.route('/pacientes/<quantidade>', methods=['GET'])
@@ -18,13 +17,18 @@ def api_get(quantidade):
     '''
         Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema
     '''
+    quantidade = int(quantidade)
     try:
-        pacientes = SortedList(key=lambda x: -x['gravidade'])
-        for fog in fogs:
-            for paciente in requests.get('http://'+fogs[fog]['href']+f'/pacientes/{quantidade}').json()['pacientes']:
-                paciente["href"] = fogs[fog]
-                pacientes.add(paciente)
-        a = jsonify({'pacientes':pacientes[:int(quantidade)]})
+        if(cache.quantidade < quantidade):
+            print('quantidade atualizada')
+            cache.quantidade = quantidade
+            cache.CACHE[1] = False
+            cache.start_thread_atualizadora()
+        dados = cache.get_cache(quantidade)
+        while(dados == None):
+            sleep(.0001)
+            dados = cache.get_cache(quantidade)
+        a = jsonify({'pacientes':dados})
         #para libera o ajax pegar os dados
         a.headers["Access-Control-Allow-Origin"] = "*"
         return a,200
@@ -42,17 +46,17 @@ def api_get_fogs():
     '''
         Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema
     '''
-    a = jsonify(fogs)
+    a = jsonify(cache.fogs)
     a.headers["Access-Control-Allow-Origin"] = "*"
     return a,200
 
 @app.route('/add_fogs/<id>', methods=['POST'])
 def api_add_fogs(id):
-    if(id not in fogs):
-        fogs_list_ids.append(id)
+    if(id not in cache.fogs):
+        cache.fogs_list_ids.append(id)
         # print(fogs_list_ids)
-    fogs[id] = request.json
-    fogs[id]['id'] = id
+    cache.fogs[id] = request.json
+    cache.fogs[id]['id'] = id
     # print(fogs)
     a = jsonify({})
     a.headers["Access-Control-Allow-Origin"] = "*"
@@ -63,13 +67,13 @@ def api_get_fog():
     try:
         print(request.json)
         if('codigo' in request.json):
-            fog = fogs_list_ids[int(request.json['codigo'])%len(fogs_list_ids)]
+            fog = cache.fogs_list_ids[int(request.json['codigo'])%len(cache.fogs_list_ids)]
         else:
-            fog = choice(fogs_list_ids)
+            fog = choice(cache.fogs_list_ids)
             # index_next_fog+=1
             # if(index_next_fog >=len(fogs_list_ids)):
             #   index_next_fog=0
-        a = jsonify(fogs[fog])
+        a = jsonify(cache.fogs[fog])
         a.headers["Access-Control-Allow-Origin"] = "*"
         return a,200
     except:
