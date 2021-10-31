@@ -11,16 +11,19 @@ quantidade = 10
 def atualizar_cache(quantidade_t):
     while True:
         pacientes = SortedList(key=lambda x: -x['gravidade'])
-        for fog in fogs:
-            try: #casso de timeout
-                if(quantidade_t != quantidade):
-                    # print("quantidade diferente da desta thread")
-                    break
-                for paciente in requests.get('http://'+fogs[fog]['href']+f'/pacientes/{quantidade_t}', timeout=2).json()['pacientes']:
-                    paciente["href"] = fogs[fog]['href']
-                    pacientes.add(paciente)
-            except Exception as e:
-                pass
+        try:
+            for fog in fogs:
+                try: #casso de timeout
+                    if(quantidade_t != quantidade):
+                        # print("quantidade diferente da desta thread")
+                        break
+                    for paciente in requests.get('http://'+fogs[fog]['href']+f'/pacientes/{quantidade_t}', timeout=2).json()['pacientes']:
+                        paciente["href"] = fogs[fog]['href']
+                        pacientes.add(paciente)
+                except Exception as e:
+                    pass
+        except Exception as e: # essa exceção acontece caso uma fog seja adicionada durante o loop entao reiniciamos este loop
+            continue
         if(quantidade_t == quantidade):
             CACHE[0] = pacientes
             CACHE[1] = True
@@ -34,7 +37,7 @@ def start_thread_atualizadora():
     thread.setDaemon(True)
     thread.start()
 
-def get_cache(quantidade):
-    return CACHE[0][:quantidade] if CACHE[1] else None
+def get_cache(quantidade_r):
+    return CACHE[0][:quantidade_r] if CACHE[1] else None
 
 start_thread_atualizadora()
