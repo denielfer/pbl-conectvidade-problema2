@@ -15,29 +15,29 @@ app = Flask(__name__)
 @app.route('/pacientes/<quantidade>', methods=['GET'])
 def api_get(quantidade):
     '''
-        Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema
+        Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema na seguinte forma:
+            {
+                'pacientes':[
+                    (__id_do_paciente__,__prioridade__),
+                    ...
+                ]
+            }
+            no qual __id_do_paciente__ é uma string e __prioridade__ é um number que indica a prioridade do paciente
+        
+        @param quantidade: int, contendo a quantidade de pacientes desejado
     '''
     quantidade = int(quantidade)
     try:
-<<<<<<< HEAD
         if(cache.quantidade < quantidade):
-            print('quantidade atualizada')
             cache.quantidade = quantidade
             cache.CACHE[1] = False
             cache.start_thread_atualizadora()
+            print('quantidade atualizada')
         dados = cache.get_cache(quantidade)
         while(dados == None):
             sleep(.0001)
             dados = cache.get_cache(quantidade)
         a = jsonify({'pacientes':dados})
-=======
-        pacientes = SortedList(key=lambda x: -x['gravidade'])
-        for fog in fogs:
-            for paciente in requests.get('http://'+fogs[fog]['href']+f'/pacientes/{quantidade}').json()['pacientes']:
-                paciente["href"] = fogs[fog]["href"]
-                pacientes.add(paciente)
-        a = jsonify({'pacientes':pacientes[:int(quantidade)]})
->>>>>>> ed59cc8197ff598d2ef63b455e217fda923b8530
         #para libera o ajax pegar os dados
         a.headers["Access-Control-Allow-Origin"] = "*"
         return a,200
@@ -53,7 +53,7 @@ def api_get(quantidade):
 @app.route('/fogs', methods=['GET'])
 def api_get_fogs():
     '''
-        Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema
+        Função que retorna um json contendo os dados das fogs presentes no sistema
     '''
     a = jsonify(cache.fogs)
     a.headers["Access-Control-Allow-Origin"] = "*"
@@ -61,11 +61,14 @@ def api_get_fogs():
 
 @app.route('/add_fogs/<id>', methods=['POST'])
 def api_add_fogs(id):
-    if(id not in cache.fogs):
+    '''  
+        Esta função lida com a roda de adição de fogs no sistema. Assim esta função salva os dados enviados pelas fogs no sistema
+    '''
+    if(id not in cache.fogs): # caso o id desta fog nao esteja no sistema ainda vamos adicionar ela na lista de fogs
         cache.fogs_list_ids.append(id)
         # print(fogs_list_ids)
-    cache.fogs[id] = request.json
-    cache.fogs[id]['id'] = id
+    cache.fogs[id] = request.json # salvamos os dados de pacientes, caso ja existam dados eles sao sobreescritos
+    cache.fogs[id]['id'] = id #colocamos o id desta fog nos dados salvos tambem
     # print(fogs)
     a = jsonify({})
     a.headers["Access-Control-Allow-Origin"] = "*"
@@ -73,12 +76,15 @@ def api_add_fogs(id):
     
 @app.route('/get_fog', methods=['POST'])
 def api_get_fog():
+    '''  
+        Função que lida escolhe uma fog para um dado dispositivo com base nos dados enviados no json
+    '''
     try:
         print(request.json)
-        if('codigo' in request.json):
-            fog = cache.fogs_list_ids[int(request.json['codigo'])%len(cache.fogs_list_ids)]
-        else:
-            fog = choice(cache.fogs_list_ids)
+        if('codigo' in request.json):# se tiver codigo nos dados enviados
+            fog = cache.fogs_list_ids[int(request.json['codigo'])%len(cache.fogs_list_ids)] # usamos esse codigo como index para escolher a fog
+        else:# caso contrario
+            fog = choice(cache.fogs_list_ids)# enviamos uma fog aleatoria
             # index_next_fog+=1
             # if(index_next_fog >=len(fogs_list_ids)):
             #   index_next_fog=0
@@ -90,19 +96,23 @@ def api_get_fog():
 
 @app.route('/connect_with_upper_layer', methods=['GET','POST'])
 def connect_with_upper_layer():
-    if(request.method == "POST"):
-        if(request.form['href'] == f'{IP}:{PORT}'):
+    '''
+        Rota para fazer a conecção entre servidores, adicionando servidores como fogs de outros servidores ( para possibilitar pesquisas recursivas de um servidor para outro )
+    '''
+    if(request.method == "POST"):# se for um post tentamos fazer o request
+        if(request.form['href'] == f'{IP}:{PORT}'): # caso seja um post sem o 'href' jogamos um bad request
             return 'Para né',400
+        #caso contrario fazemos um request de adicção de fog para o link passado
         requests.post(f'http://{request.form["href"]}/add_fogs/{id_server}',json={'href':f"{IP}:{PORT}",
                                                                 'ip':IP,
                                                                 "port":PORT,"is_final":False})
-        return 'O request foi enviado',200
-    elif(request.method == "GET"):
+        return 'O request foi enviado',200# informamos q o request foi fito
+    elif(request.method == "GET"):# caso seja um get retornamos uma pagian com um form para ser digitado o '{ip}:{porta}' para onde sera feito o request da rota com POST, e um butao para fazer o POST
         return '''<form action="/connect_with_upper_layer" method="POST">
                     <p>Digite o ip:port do servidor, sera adicionado http:// no inicio e a rota enviada é /add_fogs/__id_deste_server__</p>
                     <input type="text" name="href">
                     <button style="width: 80px;" type="submit">Enviar</button>
                 </form>''',200
-    return 'WTF',200
+    return 'WTF',404 # Essa linha nao deve ser alcançada nunca
 
 app.run(host = IP, port = PORT, debug = True)

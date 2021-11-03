@@ -7,6 +7,8 @@ app = Flask(__name__)
 def api_get_paciente(id:str):
     '''
         Função que retorna uma reposta json contendo os pacientes do sistema
+
+        @param id:string, identificador do paciente desejado no sistema
     '''
 #    print(id)
     if(id in mqtt_handler.pacientes_dados):
@@ -29,6 +31,8 @@ def api_get_pacientes(quantidade:int):
                 ]
             }
             no qual __id_do_paciente__ é uma string e __prioridade__ é um number que indica a prioridade do paciente
+        
+        @param quantidade: int, contendo a quantidade de pacientes desejado
     '''
     #retorna um dicionario com o campo 'pacientes' que tem uma lista com o tamanho solicitado contendo os pacientes mais
     #   graves do sistema na seguinte forma: [__id_do_paciente__, {__dados_do_paciente__}]
