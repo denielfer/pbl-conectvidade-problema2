@@ -39,18 +39,26 @@ class My_mqtt:
             Conecta com {ip}:{porta}, configura on_connect e on_menssage funções e inicia uma thread 
               para o main_loop do mqtt (thread que vai receber as mensagens e passar para 
               a função que lida com todas as mensagens)
+
+            @param ip: str, ip do broker em string
+            @port: int, inteiro indicando a porta na qual o broker se encontra
+            @keep_alive: int, tempo que o broker mantera a coneção a cada ping, caso o tempo passe e
+                o ping nao chegue a coneção é quebrada
+            @callback: função, função que lida com as requisições que cheguem pelo Broker
+                para esta função é passada 3 parametros, sendo: "client, userdata, msg" ( parametros
+                padroes passados para o callback pela biblioteca )
         '''
         while True:
             try:
                 self.client.on_connect = self.__on_connect__
-                if(callback == None):
-                    print('[MY_MQTT] Using defalt callback (print)')
+                if(callback == None): # se nao for passado callback
+                    print('[MY_MQTT] Using defalt callback (print)') #usamos a função padrao de printa os dados
                     self.client.on_message = self.__on_message__
                 else:
                     print('[MY_MQTT] Using passed callback')
                     self.client.on_message = callback
                 self.client.connect(ip, port, keep_alive)
-                self.running_thread = threading.Thread(target = self.__main_loop__)
+                self.running_thread = threading.Thread(target = self.__main_loop__) # thread que lida com as mensagens recebidas
                 self.running_thread.setDaemon(True)
                 self.running_thread.start()
                 break
