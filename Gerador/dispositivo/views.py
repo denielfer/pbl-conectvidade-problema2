@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.template import loader
 from .dispositivo import Dispositivo
 import names
-from .import mqtt_handler
+from .import request_handler
 
 dispositivos = {}
 
@@ -15,7 +15,7 @@ def home(request):
         Função que sisplismente retora a pagina HTML da home page ( interfacie de interação )
     '''
     template = loader.get_template("home.html")
-    return HttpResponse(template.render({"dispositivos":[(dispositivos[a].id) for a in dispositivos], "options":[(f'Prioridade {a}', a) for a in mqtt_handler.Dispositivo.GOAL_DADOS_PER_STATE]},request))
+    return HttpResponse(template.render({"dispositivos":[(dispositivos[a].id) for a in dispositivos], "options":[(f'Prioridade {a}', a) for a in request_handler.Dispositivo.GOAL_DADOS_PER_STATE]},request))
 
 def add(request):
     '''
@@ -28,7 +28,7 @@ def add(request):
             while(id in dispositivos):
                 id = names.get_full_name()
             # e entao criamos um dispositivo com este identificador, passando a tendencia indicada no campo 'tendencia_dos_dispositivos'
-            dispositivos[id] = Dispositivo(id,request.POST.get('tendencia_dos_dispositivos'), send_function = mqtt_handler.update_paciente_function)
+            dispositivos[id] = Dispositivo(id,request.POST.get('tendencia_dos_dispositivos'), send_function = request_handler.update_paciente_function)
             dispositivos[id].init_thread()
     return redirect('home') # redirecionamos para a interfacie
 

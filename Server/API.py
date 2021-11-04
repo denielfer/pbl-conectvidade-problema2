@@ -100,7 +100,7 @@ def connect_with_upper_layer():
         Rota para fazer a conecção entre servidores, adicionando servidores como fogs de outros servidores ( para possibilitar pesquisas recursivas de um servidor para outro )
     '''
     if(request.method == "POST"):# se for um post tentamos fazer o request
-        if(request.form['href'] == f'{IP}:{PORT}'): # caso seja um post sem o 'href' jogamos um bad request
+        if(request.form['href'] == f'{IP}:{PORT}'): # caso seja um post sem o 'href' tenha os dados deste servidor geraria uma recurção infinita nas buscas entao bloqueamos que o servidor possar ser adicionado como fog nele mesmo
             return 'Para né',400
         #caso contrario fazemos um request de adicção de fog para o link passado
         requests.post(f'http://{request.form["href"]}/add_fogs/{id_server}',json={'href':f"{IP}:{PORT}",

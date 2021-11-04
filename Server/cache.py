@@ -6,7 +6,7 @@ from time import sleep
 fogs = {}
 fogs_list_ids = []
 CACHE = [[],False]
-quantidade = 0
+quantidade = 10
 
 def atualizar_cache(quantidade_t):
     '''  

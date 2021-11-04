@@ -40,6 +40,8 @@ def get_fog(id_dispositivo,codigo):
     except:# se der erro fechamos a função
         print(f"[DISPOSITIVO] device: '{id_dispositivo}' was not ablet to reach main server or no fog was returned")
         return
+    while( not response['is_final']):# enquanto os dados nao forem de uma fog
+        response = requests.post(f'http://{response["href"]}/get_fog',json={'codigo':codigo}).json() # continuamos a fazer os requests ate chegarmos em uma fog
     if(f"{response['ip']}_{response['port']}" not in clients):
         # se ouver resposta e o nao haja um broker sa conectado a esta fog criamos um novo broker, 
         # isso foi feito assim, para economisar processamento do sistema ( nao criando diversos 
@@ -63,11 +65,14 @@ def update_paciente_function(dispositivo:Dispositivo):
 
         @param dispositivo: Dispositivo, dispositivo do qual os dados serao enviados
     '''
-    if(dispositivo.id in dispositivo_client):# caso ja tenha um broker designado pra uso
-        #fazemos o envio de dados
-        client_mqtt,id = dispositivo_client[dispositivo.id]
-        client_mqtt.publish(f'{id}/update_data/{dispositivo.id}/{dispositivo.gravidade}/{dispositivo.old_gravidade}/{millis()}',
-                            dumps(dispositivo.get_medicoes()))
-    else: # caso nao hava broker
-        print(f"[{dispositivo.id}] requesting FOG")
-        get_fog(dispositivo.id,dispositivo.codigo) # executamos o procedimento para tentar conseguir 1
+    try:
+        if(dispositivo.id in dispositivo_client):# caso ja tenha um broker designado pra uso
+            #fazemos o envio de dados
+            client_mqtt,id = dispositivo_client[dispositivo.id]
+            client_mqtt.publish(f'{id}/update_data/{dispositivo.id}/{dispositivo.gravidade}/{dispositivo.old_gravidade}/{millis()}',
+                                dumps(dispositivo.get_medicoes()))
+        else: # caso nao hava broker
+            print(f"[{dispositivo.id}] requesting FOG")
+            get_fog(dispositivo.id,dispositivo.codigo) # executamos o procedimento para tentar conseguir 1
+    except:
+        pass

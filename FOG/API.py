@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from json import JSONDecoder
 import mqtt_handler
+import requests
 app = Flask(__name__)
 
 @app.route('/paciente/<id>', methods=['GET'])
@@ -41,5 +42,27 @@ def api_get_pacientes(quantidade:int):
     a = jsonify({'pacientes': a})
     a.headers["Access-Control-Allow-Origin"] = "*"
     return a
+
+@app.route('/connect_with_upper_layer', methods=['GET','POST'])
+def connect_with_upper_layer():
+    '''
+        Rota para fazer a conecção entre servidores, adicionando servidores como fogs de outros servidores ( para possibilitar pesquisas recursivas de um servidor para outro )
+    '''
+    if(request.method == "POST"):# se for um post tentamos fazer o request
+        if(request.form['href'] == f'{mqtt_handler.HOST}:{mqtt_handler.PORT_API}'): # caso seja um post sem o 'href' tenha os dados deste servidor geraria uma recurção infinita nas buscas entao bloqueamos que o servidor possar ser adicionado como fog nele mesmo
+            return 'Para né',400
+        #caso contrario fazemos um request de adicção de fog para o link passado
+        requests.post(f'http://{request.form["href"]}/add_fogs/{mqtt_handler.fog_name}',
+                                                                json={'href':f"{mqtt_handler.HOST}:{mqtt_handler.PORT_API}",
+                                                                'ip':mqtt_handler.HOST,
+                                                                "port":mqtt_handler.PORT_API,"is_final":False})
+        return 'O request foi enviado',200# informamos q o request foi fito
+    elif(request.method == "GET"):# caso seja um get retornamos uma pagian com um form para ser digitado o '{ip}:{porta}' para onde sera feito o request da rota com POST, e um butao para fazer o POST
+        return '''<form action="/connect_with_upper_layer" method="POST">
+                    <p>Digite o ip:port do servidor, sera adicionado http:// no inicio e a rota enviada é /add_fogs/__id_deste_server__</p>
+                    <input type="text" name="href">
+                    <button style="width: 80px;" type="submit">Enviar</button>
+                </form>''',200
+    return 'WTF',404 # Essa linha nao deve ser alcançada nunca
 
 app.run(host = mqtt_handler.HOST, port = mqtt_handler.PORT_API)
