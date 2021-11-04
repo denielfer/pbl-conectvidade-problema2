@@ -76,7 +76,7 @@ Por fim, podemos iniciar o sub-sistema usando:
 ## Observações ##
 
 Para usar o [mosquitto](https://mosquitto.org/) como broker é nescessário usar um arquivo de configuração. Nos arquivos de configuração usados as configurações usadas são:
-'''
+
 	auto_id_prefix auto-
 	max_inflight_messages 0
 	max_keepalive 65535
@@ -84,5 +84,5 @@ Para usar o [mosquitto](https://mosquitto.org/) como broker é nescessário usar
 	max_queued_messages 10000000
 	listener __port__ __ip__
 	allow_anonymous true
-'''
+
 no qual __port__ e __ip__ são substituídos, respectivamente, pela porta na qual o broker estará operando e o IP da máquina na qual o broker está sendo executado.
