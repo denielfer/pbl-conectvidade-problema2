@@ -71,6 +71,10 @@ Por fim, podemos iniciar o sub-sistema usando:
 
 			python manage.py runserver
 
+# Iniciar Interface #
+
+Para disponilizar um servidor para a interface utilizamos o [Apache](https://www.apache.org/), possibilitando a sua visualização em um navegador, acessando com o endereço e porta definidos nas suas configurações, e auxiliando também na comunicação HTTP para os servidores do sistema.
+
 ---
 
 ## Observações ##
