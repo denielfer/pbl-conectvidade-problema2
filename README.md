@@ -6,6 +6,7 @@ Para solução deste problema foi desenvolvido um sistema descentralizado, com a
 ---
 
 ##Sistema##
+
 Como dito o sistema esta dividido em 3 partes: Servidor ( ou Servidor Principal ), FOG ( ou Servidor Intermediario ) e Gerador ( o que fara a simulação dos dispositivos ).
 Assim temos Dispositivos, que são simulados no gerador, se comunicam com o Servidor pedindo uma FOG para se conectar, passando a enviar os dados das medições simuadas para esta.
 O Servidor principal funciona como uma API que conecta Dispositivos e FOGs, bem como disponibiliza alguns dados, sendo possivel requisitar os N pacientes mais graves do sistema.
@@ -56,6 +57,7 @@ Por fim podemos iniciar o sub-sistema usando:
 			python API.py
 
 #Iniciar Gerador#
+
 Para iniciarmos o gerador é nescessario no arquivo [request_handler.py](https://github.com/denielfer/pbl-conectvidade-problema2/blob/main/Gerador/dispositivo/request_handler.py) na linhas 39 substituir o link presente na request POST pelo link do seu servidor, confome a imagem:
 
 ![Alt Text](imagens/gerador.png)
@@ -72,6 +74,7 @@ Por fim podemos iniciar o sub-sistema usando:
 ---
 
 ## Observações ##
+
 Para usar o [mosquitto](https://mosquitto.org/) como broker é nescessario usar um arquivo de configuração. Nos arquivos de configuração usados as configurações usadas são:
 '''
 	auto_id_prefix auto-
