@@ -5,7 +5,7 @@ Para solução deste problema foi desenvolvido um sistema descentralizado, com a
 
 ---
 
-##Sistema##
+## Sistema ##
 
 Como dito o sistema esta dividido em 3 partes: Servidor ( ou Servidor Principal ), FOG ( ou Servidor Intermediario ) e Gerador ( o que fara a simulação dos dispositivos ).
 Assim temos Dispositivos, que são simulados no gerador, se comunicam com o Servidor pedindo uma FOG para se conectar, passando a enviar os dados das medições simuadas para esta.
@@ -20,7 +20,7 @@ Para ultilização deste sistema é nescessario ter o [Python](https://www.pytho
 Tabem para os testes locais foi usado o [Radmin](https://www.radmin-vpn.com/br/) para simulação de uma rede naqual os testes foram feitos durante o desenvolvimento.
 Assim para configurar o sistema é feito o seguinte passo a passo:
 
-#Iniciar o Servidor#
+# Iniciar o Servidor #
 
 Para iniciarmos a execução do sistema é executado o sub-sistema do [Servidor](https://github.com/denielfer/pbl-conectvidade-problema2/tree/main/Server) ( estando na sua pasta na maquina na qual ele sera executado ), para tal precisamos ter um ambiente virtual com os requirements instalados para tal criamos um ambiente virtual python com o comando:
 
@@ -56,7 +56,7 @@ Por fim podemos iniciar o sub-sistema usando:
 
 			python API.py
 
-#Iniciar Gerador#
+# Iniciar Gerador #
 
 Para iniciarmos o gerador é nescessario no arquivo [request_handler.py](https://github.com/denielfer/pbl-conectvidade-problema2/blob/main/Gerador/dispositivo/request_handler.py) na linhas 39 substituir o link presente na request POST pelo link do seu servidor, confome a imagem:
 
