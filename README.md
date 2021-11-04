@@ -8,8 +8,11 @@ Para solução deste problema foi desenvolvido um sistema descentralizado, com a
 # Sistema #
 
 Como dito, o sistema está dividido em 3 partes: Servidor (ou Servidor Principal), FOG (ou Servidor Intermediario) e Gerador (o que fará a simulação dos dispositivos).
+
 Assim, temos Dispositivos que são simulados no gerador e se comunicam com o Servidor pedindo uma FOG para se conectar, passando a enviar os dados das medições simuladas para esta.
+
 O Servidor principal funciona como uma API que conecta Dispositivos e FOGs, bem como disponibiliza alguns dados, sendo possível requisitar os N pacientes mais graves do sistema.
+
 A Fog é onde os dados são guardados, Dispositivos fazem o envio constante destes dados através do MQTT, e estes são disponibilizados através de uma API, na qual é possível pedir os N pacientes mais graves (presentes nesta FOG) e os dados de um paciente específico.
 
 ---
@@ -17,7 +20,9 @@ A Fog é onde os dados são guardados, Dispositivos fazem o envio constante dest
 # Configuração #
 
 Para ultilização deste sistema é nescessário ter o [Python](https://www.python.org/) instalado em todas as máquinas que serão usadas, bem como acesso a um broker MQTT para utilização de cada fog (existe suporte para 2 FOGs no mesmo broker, porém, por requisito de sistema é usado um broker único para cada FOG, assim, os dispositivos se conectariam na FOG mais próxima a eles, assim, cada fog teria um broker próprio), sendo utilizado por nós um servidor MQTT local com o [mosquitto](https://mosquitto.org/).
+
 Também para os testes locais foi usado o [Radmin](https://www.radmin-vpn.com/br/) para simulação de uma rede na qual os testes foram feitos durante o desenvolvimento.
+
 Assim, para configurar o sistema é feito o seguinte passo a passo:
 
 ## Iniciar o Servidor ##
