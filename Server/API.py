@@ -6,8 +6,8 @@ from string import hexdigits
 import sys
 import cache
 
-IP = sys.argv[2] if(len(sys.argv) >3 ) else "26.181.221.42"
-PORT = sys.argv[3] if(len(sys.argv) > 3) else sys.argv[2] if(len(sys.argv) > 2) else 17892
+IP =  "26.181.221.42"
+PORT = sys.argv[2] if(len(sys.argv) > 2) else 17892
 
 id_server= sys.argv[1] if(len(sys.argv) > 1) else''.join(''.join(choices(hexdigits, k = 15)).upper())
 app = Flask(__name__)
