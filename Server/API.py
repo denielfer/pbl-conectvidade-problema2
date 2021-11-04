@@ -77,7 +77,7 @@ def api_add_fogs(id):
 @app.route('/get_fog', methods=['POST'])
 def api_get_fog():
     '''  
-        Função que lida escolhe uma fog para um dado dispositivo com base nos dados enviados no json
+        Função que lida com a rota de escolher uma fog para um dado dispositivo com base nos dados enviados no json
     '''
     try:
         print(request.json)

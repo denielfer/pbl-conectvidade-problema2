@@ -88,7 +88,7 @@ class Dispositivo:
                           (96 - self.medicoes["Oxigenacao"]) * 4 + 
                           (self.medicoes["Frequencia Respiratoria"] - 20) * 3 + 
                           (self.medicoes["Temperatura"] - 38) * 4 + 
-                          (self.medicoes["Frequencia Cardiaca"] - 100) * 3),2)
+                          (self.medicoes["Frequencia Cardiaca"] - 100) * 3)+150,2)
 
     def altera_medicoes(self, dados_dos_sensores):
         '''
