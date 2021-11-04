@@ -18,7 +18,7 @@ def millis():
     '''
     return int(round(TiMe___.time() * 1000))
 
-my_client = My_mqtt() # broekr mqtt
+my_client = My_mqtt() # client mqtt
 
 # Padrão rotas MQTT
 # o que tem o padrão "__nome_paciente__" representa variável então isso seria substituído pelo nome do paciente 
