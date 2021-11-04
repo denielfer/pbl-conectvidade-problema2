@@ -36,7 +36,7 @@ por fim precisamos configurar ip e porta no qual a API sera executada para tal p
 
 podendo passar a porta na qual a API sera executada como parametro conforme de arquivo:
 
-				python API.py __identificador_do_servidor__ __porta_para_API__
+			python API.py __identificador_do_servidor__ __porta_para_API__
 
 
 no qual '__identificador_do_servidor__' e '__porta_para_API__' sao parametros opicionais ( que caso desejado passar ) o primeiro sera usado como identificador do servidor ( uma string unica para indicar este servidor no sistema ) e o segundo sera usado como a porta na qual a API sera executada.
