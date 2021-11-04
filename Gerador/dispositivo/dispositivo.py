@@ -6,7 +6,7 @@ SENSORES_NOMES = ['Temperatura', 'Frequencia Respiratoria', 'Frequencia Cardiaca
 
 def get_random_modify(goal, value, step = 5):
     '''
-        Função que retorna um modificador aleatorio tentando deixa os dados proximos do objetivo ( <goal> )
+        Função que retorna um modificador aleatório tentando deixar os dados próximos do objetivo (<goal>)
             tentando deixa estes dados semi-aleatorios
         
         @param goal: int, inteiro representando o numero objetvio que os dados devem esta orbitando envolta
@@ -19,7 +19,7 @@ def get_random_modify(goal, value, step = 5):
     
 def get_data_for_new_device():
     '''
-        Função que retorna um dicionario com dados gerados de forma aleatorio
+        Função que retorna um dicionário com dados gerados de forma aleatória
     '''
     return {
     'Temperatura': get_random_modify(35.3,0,15), #número aleatório entre 0 e 35.3 +ou- 0 a 15
@@ -38,8 +38,8 @@ def send_function(dispositivo): #id, dados
 SEND_FUNCTION_DEFAULT = send_function #para ser fácil de trocar a função, default, que envia os dados
 
 class Dispositivo:
-    #variáveis para setar padrões de alteração, padroes ( setup de constantes ) para geração dos dados semi-aleatorios
-    GOAL_DADOS_PER_STATE={
+    #variáveis para setar padrões de alteração, padrões (setup de constantes) para geração dos dados semi-aleatórios
+    GOAL_DADOS_PER_STATE = {
         'Grave': {
             'Temperatura': [40,0.5],
             'Frequencia Respiratoria': [25,1],
@@ -55,7 +55,7 @@ class Dispositivo:
             'Max Pressao': [120,5],
         }
     }
-    quantidade_dispositivos = 0 # variavel de classe para indicar a quantiadde de dispositivos no sistema, esta sera usada para dar um codigo unico a cada dispositivo
+    quantidade_dispositivos = 0 #variável de classe para indicar a quantidade de dispositivos no sistema, esta será usada para dar um código único a cada dispositivo
     def __init__(self, id, tendencia, send_function = SEND_FUNCTION_DEFAULT, dados_dos_sensores = None):
         '''
             Função de inicialização de dispositivo
@@ -88,13 +88,13 @@ class Dispositivo:
                           (96 - self.medicoes["Oxigenacao"]) * 4 + 
                           (self.medicoes["Frequencia Respiratoria"] - 20) * 3 + 
                           (self.medicoes["Temperatura"] - 38) * 4 + 
-                          (self.medicoes["Frequencia Cardiaca"] - 100) * 3)+150,2)
+                          (self.medicoes["Frequencia Cardiaca"] - 100) * 3) + 150, 2)
 
     def altera_medicoes(self, dados_dos_sensores):
         '''
             Função que salva <dados_dos_sensores> no dispositivo
 
-            @param dados_dos_sens: dict, dicionario de medições que sera salvo no dispositivo
+            @param dados_dos_sens: dict, dicionário de medições que será salvo no dispositivo
         '''
         self.medicoes = dados_dos_sensores
 
@@ -110,8 +110,8 @@ class Dispositivo:
         '''
             Função que atuliza os dados das medições e a gravidade
         '''
-        for b in self.tendencia:
-            self.medicoes[b] = round(self.medicoes[b] + get_random_modify(self.tendencia[b][0], self.medicoes[b], self.tendencia[b][1]), 2)
+        for sensor in self.tendencia:
+            self.medicoes[sensor] = round(self.medicoes[sensor] + get_random_modify(self.tendencia[sensor][0], self.medicoes[sensor], self.tendencia[sensor][1]), 2)
         self.update_gravidade()
 
     def __thread_function__(self):

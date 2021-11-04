@@ -9,7 +9,7 @@ import cache
 IP = sys.argv[2] if(len(sys.argv) >3 ) else "26.181.221.42"
 PORT = sys.argv[3] if(len(sys.argv) > 3) else sys.argv[2] if(len(sys.argv) > 2) else 17892
 
-id_server= sys.argv[1] if(len(sys.argv) > 1) else''.join(''.join(choices(hexdigits, k = 15)).upper())
+id_server = sys.argv[1] if(len(sys.argv) > 1) else''.join(''.join(choices(hexdigits, k = 15)).upper())
 app = Flask(__name__)
 
 @app.route('/pacientes/<quantidade>', methods=['GET'])
@@ -18,11 +18,11 @@ def api_get(quantidade):
         Função que retorna um json contendo os {quantidade} pacientes mais graves do sistema na seguinte forma:
             {
                 'pacientes':[
-                    (__id_do_paciente__,__prioridade__),
+                    (__id_do_paciente__, __prioridade__),
                     ...
                 ]
             }
-            no qual __id_do_paciente__ é uma string e __prioridade__ é um number que indica a prioridade do paciente
+            no qual __id_do_paciente__ é uma string e __prioridade__ é um número que indica a prioridade do paciente
         
         @param quantidade: int, contendo a quantidade de pacientes desejado
     '''
@@ -33,21 +33,24 @@ def api_get(quantidade):
             cache.CACHE[1] = False
             cache.start_thread_atualizadora()
             print('quantidade atualizada')
+
         dados = cache.get_cache(quantidade)
+
         while(dados == None):
             sleep(.0001)
             dados = cache.get_cache(quantidade)
+
         a = jsonify({'pacientes':dados})
-        #para libera o ajax pegar os dados
+        #libera a entrada para o AJAX pegar os dados
         a.headers["Access-Control-Allow-Origin"] = "*"
-        return a,200
+        return a, 200
     except Exception as e:
         print(f'[API] Erro on process request')
         print(e)
         a = jsonify({'pacientes':[]})
-        #para libera o ajax pegar os dados
+        #libera a entrada para o AJAX pegar os dados
         a.headers["Access-Control-Allow-Origin"] = "*"
-        return a,404
+        return a, 404
 
 
 @app.route('/fogs', methods=['GET'])
