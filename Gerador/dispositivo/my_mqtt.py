@@ -20,7 +20,7 @@ class My_mqtt:
 
     def __on_connect__(self, client, userdata, flags, rc):
         '''
-            Função que é chamada quando o client se comunica ao broker mqtt, assim os parâmetros são os requisitados por tal
+            Função que é chamada quando o client se comunica ao broker MQTT, assim, os parâmetros são os requisitados por tal
         '''
         print("[MY_MQTT] Connected with result code " + str(rc))
 
@@ -48,7 +48,9 @@ class My_mqtt:
                 para esta função é passada 3 parâmetros, sendo: "client, userdata, msg" (parâmetros
                 padrões passados para o callback pela biblioteca)
         '''
-        while True:
+        # tem um while true aqui para o caso de haver erro na tentativa de coneção ele ira cair no
+        # except printa que não se conectou e ficar tentando novamente até se conectar
+        while True: 
             try:
                 self.client.on_connect = self.__on_connect__
                 if(callback == None): #se não for passado callback
@@ -58,16 +60,17 @@ class My_mqtt:
                     print('[MY_MQTT] Using passed callback')
                     self.client.on_message = callback
                 self.client.connect(ip, port, keep_alive)
+                # na iterações do loop noa sera crida diversas thread pois se houver erro ele acontecera nas linhas acima
                 self.running_thread = threading.Thread(target = self.__main_loop__) #thread que lida com as mensagens recebidas
                 self.running_thread.setDaemon(True)
                 self.running_thread.start()
-                break
+                break # caso a conecção aconteceu com sucesso podemos sair do loop
             except Exception:
                 print(f"Não foi possível se conectar com o broker, tentando novamente...")
 
     def __main_loop__(self):
         '''
-            Função que será passada para o thread do main loop
+            Função que será passada para a thread do main loop
         '''
         self.client.loop_forever()
 
