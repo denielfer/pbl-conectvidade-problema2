@@ -90,6 +90,7 @@ Para usar o [mosquitto](https://mosquitto.org/) como broker é nescessário usar
 	max_inflight_messages 0
 	max_keepalive 65535
 	max_queued_bytes 0
+	max_qos 2
 	max_queued_messages 10000000
 	listener __port__ __ip__
 	allow_anonymous true
