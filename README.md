@@ -30,6 +30,7 @@ Assim, para configurar o sistema é feito o seguinte passo a passo:
 Para iniciarmos a execução do sistema é executado o sub-sistema do [Servidor](https://github.com/denielfer/pbl-conectvidade-problema2/tree/main/Server) (estando na sua pasta na máquina na qual ele será executado), para tal, precisamos ter um ambiente virtual com os requirements instalados para criarmos um ambiente virtual python com o comando:
 
 			python -m venv env
+			.\env\Scripts\activate
 
 e em seguida instalamos os requisitos através de:
 
@@ -55,6 +56,7 @@ Com o Servidor em funcionamento executamos quantas FOGs forem desejadas, para ta
 Então, na pasta da [FOG](https://github.com/denielfer/pbl-conectvidade-problema2/tree/main/FOG) vamos criar um ambiente virtual python e instalar os requisitos através de:
 
 			python -m venv env
+			.\env\Scripts\activate
 			python -m pip install -r requirements.txt
 
 Por fim, podemos iniciar o sub-sistema usando:
@@ -70,6 +72,7 @@ Para iniciarmos o gerador, é nescessario no arquivo [request_handler.py](https:
 Então, na pasta do [Gerador](https://github.com/denielfer/pbl-conectvidade-problema2/tree/main/Gerador) vamos criar um ambiente virtual python e instalar os requisitos executando:
 
 			python -m venv env
+			.\env\Scripts\activate
 			python -m pip install -r requirements.txt
 
 Por fim, podemos iniciar o sub-sistema usando:
@@ -79,8 +82,9 @@ Por fim, podemos iniciar o sub-sistema usando:
 ## Iniciar Interface ##
 
 Para disponilizar um servidor para a interface utilizamos o [Apache](https://www.apache.org/), possibilitando a sua visualização em um navegador, acessando com o endereço e porta definidos nas suas configurações, e auxiliando também na comunicação HTTP para os servidores do sistema.
-No código JavaScript da página(index.html) precisamos configurar a requisição AJAX para o endereço correspondente da Servidor Principal, essa configuração pode ser feita na linha 140, onde temos:
-	url: 'http://26.181.221.42:17892/pacientes/' + qtd
+No código JavaScript da página(index.html) precisamos configurar a requisição AJAX para o endereço correspondente da Servidor Principal, essa configuração pode ser feita na linha 140 do arquivo [index](https://github.com/denielfer/pbl-conectvidade-problema2/blob/main/index.html), conforme imagem:
+
+![Alt Text](imagens/interfacie.png)
 
 ---
 
@@ -97,4 +101,4 @@ Para usar o [mosquitto](https://mosquitto.org/) como broker é nescessário usar
 	listener __port__ __ip__
 	allow_anonymous true
 
-no qual __port__ e __ip__ são substituídos, respectivamente, pela porta na qual o broker estará operando e o IP da máquina na qual o broker está sendo executado.
+no qual \_\_port\_\_ e \_\_ip\_\_ são substituídos, respectivamente, pela porta na qual o broker estará operando e o IP da máquina na qual o broker está sendo executado.
