@@ -36,12 +36,15 @@ def get_fog(id_dispositivo, codigo):
         @param codigo: int, número que será usado pelo filtro do servidor para escolher qual fog deve ser direcionado
     '''
     try: #fazemos o request
-        response = requests.post('http://26.181.221.42:17892/get_fog',json={'codigo':codigo}).json()
+        response = requests.post('http://26.181.221.42:17892/get_fog',json={'codigo':codigo},timeout=2).json()
     except: #se der erro fechamos a função
         print(f"[DISPOSITIVO] device: '{id_dispositivo}' was not ablet to reach main server or no fog was returned")
         return
     while( not response['is_final']): #enquanto os dados não forem de uma fog
-        response = requests.post(f'http://{response["href"]}/get_fog', json = {'codigo':codigo}).json() #continuamos a fazer os requests até chegarmos em uma fog
+        try: # esse try nao deveria falhar pois no anterior é encerado a função caso o servidor esteja off, mas por via das duvidas...
+            response = requests.post(f'http://{response["href"]}/get_fog', json = {'codigo':codigo},timeout=2).json() #continuamos a fazer os requests até chegarmos em uma fog
+        except:
+            response = {'is_final':False}
     if(f"{response['ip']}_{response['port']}" not in clients):
         #se houver resposta e o não tiver um broker conectado a esta fog, criamos um novo broker, 
         #foi feito dessa forma para economizar processamento do sistema (não criando diversos 
