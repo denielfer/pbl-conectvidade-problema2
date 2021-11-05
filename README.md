@@ -98,4 +98,4 @@ Para usar o [mosquitto](https://mosquitto.org/) como broker é nescessário usar
 	listener __port__ __ip__
 	allow_anonymous true
 
-no qual __port__ e __ip__ são substituídos, respectivamente, pela porta na qual o broker estará operando e o IP da máquina na qual o broker está sendo executado.
+no qual \_\_port\_\_ e \_\_ip\_\_ são substituídos, respectivamente, pela porta na qual o broker estará operando e o IP da máquina na qual o broker está sendo executado.
