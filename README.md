@@ -30,6 +30,7 @@ Assim, para configurar o sistema é feito o seguinte passo a passo:
 Para iniciarmos a execução do sistema é executado o sub-sistema do [Servidor](https://github.com/denielfer/pbl-conectvidade-problema2/tree/main/Server) (estando na sua pasta na máquina na qual ele será executado), para tal, precisamos ter um ambiente virtual com os requirements instalados para criarmos um ambiente virtual python com o comando:
 
 			python -m venv env
+			.\env\Scripts\activate
 
 e em seguida instalamos os requisitos através de:
 
@@ -55,6 +56,7 @@ Com o Servidor em funcionamento executamos quantas FOGs forem desejadas, para ta
 Então, na pasta da [FOG](https://github.com/denielfer/pbl-conectvidade-problema2/tree/main/FOG) vamos criar um ambiente virtual python e instalar os requisitos através de:
 
 			python -m venv env
+			.\env\Scripts\activate
 			python -m pip install -r requirements.txt
 
 Por fim, podemos iniciar o sub-sistema usando:
@@ -70,6 +72,7 @@ Para iniciarmos o gerador, é nescessario no arquivo [request_handler.py](https:
 Então, na pasta do [Gerador](https://github.com/denielfer/pbl-conectvidade-problema2/tree/main/Gerador) vamos criar um ambiente virtual python e instalar os requisitos executando:
 
 			python -m venv env
+			.\env\Scripts\activate
 			python -m pip install -r requirements.txt
 
 Por fim, podemos iniciar o sub-sistema usando:
