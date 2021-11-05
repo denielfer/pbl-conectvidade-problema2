@@ -37,7 +37,7 @@ def __update_data__(topic_splited, payload, client):
             dicionário.
     '''
     delay = millis() - int(topic_splited[5]) #dado usado para medir o delay do tempo de envio
-    print(f'{topic_splited[2]} gravidade: {topic_splited[3]} estado: {"Grave" if float(topic_splited[3]) > 100 else "Normal"} delay:{delay}')
+    print(f'{topic_splited[2]} gravidade: {topic_splited[3]} estado: {"Grave" if float(topic_splited[3]) > 250 else "Normal"} delay:{delay}')
     try: #tentamos remover o dado antigo de gravidade do paciente na lista
         pacientes_por_gravidade.pop(pacientes_por_gravidade.index({'id': topic_splited[2], 'gravidade': float(topic_splited[4])}))
     except:
