@@ -116,20 +116,18 @@ class Dispositivo:
 
     def __thread_function__(self):
         '''
-            Função da thread de simulação do dispositivo
+            Função da thread de simulação do dispositivo. a rotina é atualizar dados de medições, fazer envio, 
+                dormir por entre 0 a 2s e entao repetir novamente
         '''
         while True:
-            if(self.semaphare.acquire(False)):
-                break
-            self.__update_data__()
-            self.send_function(self)
+            try:
+                if(self.semaphare.acquire(False)):
+                    break
+                self.__update_data__()
+                self.send_function(self)
+            except Exception as e:
+                print(e)
             sleep(2 * random())
 
     def stop(self):
         self.semaphare.release()
-
-
-if __name__ == "__main__":
-    d = Dispositivo('daniel', "Prioridade_4")
-    d.init_thread()
-    input()
