@@ -1,5 +1,5 @@
 # Descrição #
-Projeto para a 2° PBL da diciplina TEC502 - MI - CONCORRÊNCIA E CONECTIVIDADE. A descrição do problema pode ser vista [aqui]()
+Projeto para a 2° PBL da diciplina TEC502 - MI - CONCORRÊNCIA E CONECTIVIDADE. A descrição do problema pode ser vista [aqui](https://github.com/denielfer/pbl-conectvidade-problema2/blob/main/Filies/Apresenta%C3%A7%C3%A3o_do_Problema.pdf) e o seu relatorio [aqui](https://github.com/denielfer/pbl-conectvidade-problema2/blob/main/Filies/Relat%C3%B3rio%20Problema%202(N%C3%A9voa%20das%20coisas).pdf)
 
 Para solução deste problema foi desenvolvido um sistema descentralizado, com a ultilização de micro-sistemas, para possibilitar uma melhor escalabilidade e desempenho. Assim, o sistema é composto de 2 sub-sistemas principais e 1 sub-sistema auxiliar que podem ser executados de forma distribuída, sendo nescessário alterar apenas algumas configurações.
 
