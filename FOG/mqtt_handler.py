@@ -126,6 +126,6 @@ my_client.subscribe(f'{fog_name}/#', qos = 1)
 #request para o main server para ser adicionado como fog
 requests.post(MAIN_SERVER_URL+f'/add_fogs/{fog_name}',json={'href':f"{HOST}:{PORT_API}",
                                                                 'ip':f"{HOST}",
-                                                                "port":PORT_BROKER,"is_final":True})
+                                                                "port":PORT_BROKER,"is_final":True},timeout=2)
 if(__name__ == '__main__'):
     input()
