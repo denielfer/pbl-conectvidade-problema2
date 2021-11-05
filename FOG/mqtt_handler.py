@@ -5,8 +5,8 @@ import json
 from sortedcontainers import SortedList
 
 MAIN_SERVER_URL='http://26.181.221.42:17892' #link do main server que esta fog irá se conectar
-HOST = '26.165.180.216' #IP desta máquina que será usado para upar API e onde é esperado que esteja o Broker MQTT
-PORT_API = 18931 #porta onde a API irá ser executada
+HOST = '26.181.221.42' #IP desta máquina que será usado para upar API e onde é esperado que esteja o Broker MQTT
+PORT_API = 18932 #porta onde a API irá ser executada
 PORT_BROKER = 1883 #porta onde o broker MQTT se encontra
 
 import time as TiMe___ 
@@ -124,8 +124,11 @@ request_handler_thread.setDaemon(True)
 request_handler_thread.start()
 my_client.subscribe(f'{fog_name}/#', qos = 1)
 #request para o main server para ser adicionado como fog
-requests.post(MAIN_SERVER_URL+f'/add_fogs/{fog_name}',json={'href':f"{HOST}:{PORT_API}",
+try:
+    requests.post(MAIN_SERVER_URL+f'/add_fogs/{fog_name}',json={'href':f"{HOST}:{PORT_API}",
                                                                 'ip':f"{HOST}",
                                                                 "port":PORT_BROKER,"is_final":True},timeout=2)
+except:
+    pass
 if(__name__ == '__main__'):
     input()

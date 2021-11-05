@@ -107,7 +107,7 @@ def connect_with_upper_layer():
             return 'Para né',400
         #caso contrario fazemos um request de adicção de fog para o link passado
         requests.post(f'http://{request.form["href"]}/add_fogs/{id_server}',json={'href':f"{IP}:{PORT}",
-                                                                'ip':IP,
+                                                                'ip':f"{IP}",
                                                                 "port":PORT,"is_final":False},timeout=2)
         return 'O request foi enviado',200# informamos q o request foi fito
     elif(request.method == "GET"):# caso seja um get retornamos uma pagian com um form para ser digitado o '{ip}:{porta}' para onde sera feito o request da rota com POST, e um butao para fazer o POST

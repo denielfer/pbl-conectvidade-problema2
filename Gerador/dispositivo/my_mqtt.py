@@ -80,7 +80,7 @@ class My_mqtt:
         '''
         self.client.disconect()
     
-    def publish(self, topic, payload, qos = 1):
+    def publish(self, topic, payload, qos = 0):
         '''
             Publica {payload} no {topic} com o qos informado
 
