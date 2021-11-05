@@ -79,8 +79,9 @@ Por fim, podemos iniciar o sub-sistema usando:
 ## Iniciar Interface ##
 
 Para disponilizar um servidor para a interface utilizamos o [Apache](https://www.apache.org/), possibilitando a sua visualização em um navegador, acessando com o endereço e porta definidos nas suas configurações, e auxiliando também na comunicação HTTP para os servidores do sistema.
-No código JavaScript da página(index.html) precisamos configurar a requisição AJAX para o endereço correspondente da Servidor Principal, essa configuração pode ser feita na linha 140, onde temos:
-	url: 'http://26.181.221.42:17892/pacientes/' + qtd
+No código JavaScript da página(index.html) precisamos configurar a requisição AJAX para o endereço correspondente da Servidor Principal, essa configuração pode ser feita na linha 140 do arquivo [index](https://github.com/denielfer/pbl-conectvidade-problema2/blob/main/index.html), conforme imagem:
+
+![Alt Text](imagens/interfacie.png)
 
 ---
 
