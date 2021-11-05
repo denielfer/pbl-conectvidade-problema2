@@ -5,7 +5,7 @@ import json
 from sortedcontainers import SortedList
 
 MAIN_SERVER_URL='http://26.181.221.42:17892' #link do main server que esta fog irá se conectar
-HOST = '26.181.221.42' #IP desta máquina que será usado para upar API e onde é esperado que esteja o Broker MQTT
+HOST = '26.165.180.216' #IP desta máquina que será usado para upar API e onde é esperado que esteja o Broker MQTT
 PORT_API = 18932 #porta onde a API irá ser executada
 PORT_BROKER = 1883 #porta onde o broker MQTT se encontra
 
